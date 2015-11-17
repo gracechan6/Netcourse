@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/unread"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:background="@drawable/unread_bgorange_circle"/>
+    <TextView
+        android:id="@+id/title"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/unread"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/announ_title"
+        android:textSize="20sp"
+        android:text="市院举行“浙检英模大讲堂”首次宣讲"/>
+    <TextView
+        android:id="@+id/content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/unread"
+        android:layout_below="@id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textColor="@color/announ_content"
+        android:textSize="17sp"
+        android:text="今天开始降价方式打开了房间睡fsdsdf sd f sa 松岛觉阿asddsf发大师傅撒答复 弗拉基撒阿立即付款卡死"/>
+
+</RelativeLayout>

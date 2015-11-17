@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="transparent">#00000000</color>
+    <color name="black">#000</color>
+    <color name="white">#FFF</color>
+
+    <color name="bg">#E5E5E5</color>
+    <color name="bg_bottom">#FFF</color>
+    <color name="bg_toolbar">#F7F7F7</color>
+    <color name="red_select">#B70707</color>
+    <color name="grey_default">#7D8188</color>
+
+    <color name="unread_orange">#EB6A14</color>
+    <color name="announ_title">#3F444B</color>
+    <color name="announ_content">#C2C8D0</color>
+
+</resources>
