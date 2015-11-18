@@ -13,5 +13,6 @@
     <color name="unread_orange">#EB6A14</color>
     <color name="announ_title">#3F444B</color>
     <color name="announ_content">#C2C8D0</color>
+    <color name="divider_color">#D1DAE7</color>
 
 </resources>

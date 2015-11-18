@@ -9,10 +9,14 @@
         android:text="touch onLine"
         android:onClick="doTouch"/>
 
-    <TextView
-        android:id="@+id/touchback"
-        android:layout_below="@id/touch"
+    <ListView
+        android:id="@+id/announInfoLsv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@id/touch"
+        android:divider="@color/divider_color"
+        android:dividerHeight="1dp"
+        android:fadeScrollbars="false"
+        android:clipToPadding="false"/>
 
 </RelativeLayout>

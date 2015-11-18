@@ -1,6 +1,6 @@
 package pers.nbu.netcourse.entity;
 
-public class AnnounInfo {
+public class AnnEntity {
 	private Integer AnnNum;
     private Integer Treeid;
     private String TeachNum;
@@ -9,14 +9,27 @@ public class AnnounInfo {
 	private String AnnCon;//2
 	private String AnnUrl;//3
 	private String AnnTime;//4
-    private Integer read;//0已读 1未读
+    //private Integer read;//0已读 1未读
 
-    public Integer getRead() {
-        return read;
-    }
-    public void setRead(Integer read) {
-        this.read = read;
-    }
+
+	public AnnEntity(String annTitle, String annCon) {
+		AnnTitle = annTitle;
+		AnnCon = annCon;
+	}
+
+	public AnnEntity(String annTitle, String annCon, String annUrl, String annTime) {
+		AnnTitle = annTitle;
+		AnnCon = annCon;
+		AnnUrl = annUrl;
+		AnnTime = annTime;
+	}
+
+	/*public Integer getRead() {
+                return read;
+            }
+            public void setRead(Integer read) {
+                this.read = read;
+            }*/
     public Integer getAnnNum() {
 		return AnnNum;
 	}
