@@ -4,7 +4,14 @@
     <color name="black">#000</color>
     <color name="white">#FFF</color>
 
+    <color name="toolbar_bg">#F7F7F7</color>
+
+    <color name="bottom_text_selected">#B90609</color>
+    <color name="bottom_text">#989898</color>
+    <color name="bottom_bg">#F9F9F9</color>
+
     <color name="bg">#E5E5E5</color>
+
     <color name="bg_bottom">#FFF</color>
     <color name="bg_toolbar">#F7F7F7</color>
     <color name="red_select">#B70707</color>
@@ -14,5 +21,8 @@
     <color name="announ_title">#3F444B</color>
     <color name="announ_content">#C2C8D0</color>
     <color name="divider_color">#D1DAE7</color>
+
+    <color name="bg_btn_send">#858E99</color>
+    <color name="bg_btn_send_selected">#858EA9</color>
 
 </resources>

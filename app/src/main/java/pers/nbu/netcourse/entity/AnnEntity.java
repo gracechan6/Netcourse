@@ -2,13 +2,13 @@ package pers.nbu.netcourse.entity;
 
 public class AnnEntity {
 	private Integer AnnNum;
-    private Integer Treeid;
-    private String TeachNum;
-    //主要用到的部分
 	private String AnnTitle;//1
 	private String AnnCon;//2
 	private String AnnUrl;//3
 	private String AnnTime;//4
+	private String TeachName;
+	private String CourName;
+
     //private Integer read;//0已读 1未读
 
 
@@ -17,61 +17,69 @@ public class AnnEntity {
 		AnnCon = annCon;
 	}
 
-	public AnnEntity(String annTitle, String annCon, String annUrl, String annTime) {
+	public AnnEntity(Integer annNum, String annTitle, String annCon, String annUrl, String annTime, String teachName, String courName) {
+		AnnNum = annNum;
 		AnnTitle = annTitle;
 		AnnCon = annCon;
 		AnnUrl = annUrl;
 		AnnTime = annTime;
+		TeachName = teachName;
+		CourName = courName;
 	}
 
-	/*public Integer getRead() {
-                return read;
-            }
-            public void setRead(Integer read) {
-                this.read = read;
-            }*/
-    public Integer getAnnNum() {
+	public Integer getAnnNum() {
 		return AnnNum;
 	}
+
 	public void setAnnNum(Integer annNum) {
 		AnnNum = annNum;
 	}
+
 	public String getAnnTitle() {
 		return AnnTitle;
 	}
+
 	public void setAnnTitle(String annTitle) {
 		AnnTitle = annTitle;
 	}
+
 	public String getAnnCon() {
 		return AnnCon;
 	}
+
 	public void setAnnCon(String annCon) {
 		AnnCon = annCon;
 	}
+
 	public String getAnnUrl() {
 		return AnnUrl;
 	}
+
 	public void setAnnUrl(String annUrl) {
 		AnnUrl = annUrl;
 	}
+
 	public String getAnnTime() {
 		return AnnTime;
 	}
+
 	public void setAnnTime(String annTime) {
 		AnnTime = annTime;
 	}
-	public Integer getTreeid() {
-		return Treeid;
+
+	public String getTeachName() {
+		return TeachName;
 	}
-	public void setTreeid(Integer treeid) {
-		Treeid = treeid;
+
+	public void setTeachName(String teachName) {
+		TeachName = teachName;
 	}
-	public String getTeachNum() {
-		return TeachNum;
+
+	public String getCourName() {
+		return CourName;
 	}
-	public void setTeachNum(String teachNum) {
-		TeachNum = teachNum;
+
+	public void setCourName(String courName) {
+		CourName = courName;
 	}
-	
-	
 }
