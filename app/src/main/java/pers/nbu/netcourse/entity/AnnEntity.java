@@ -1,6 +1,7 @@
 package pers.nbu.netcourse.entity;
 
 public class AnnEntity {
+	private Integer AnnId;
 	private Integer AnnNum;
 	private String AnnTitle;//1
 	private String AnnCon;//2
@@ -25,6 +26,25 @@ public class AnnEntity {
 		AnnTime = annTime;
 		TeachName = teachName;
 		CourName = courName;
+	}
+
+	public AnnEntity(Integer annId,Integer annNum, String annTitle, String annCon, String annUrl, String annTime, String teachName, String courName) {
+		AnnId = annId;
+		AnnNum = annNum;
+		AnnTitle = annTitle;
+		AnnCon = annCon;
+		AnnUrl = annUrl;
+		AnnTime = annTime;
+		TeachName = teachName;
+		CourName = courName;
+	}
+
+	public Integer getAnnId() {
+		return AnnId;
+	}
+
+	public void setAnnId(Integer annId) {
+		AnnId = annId;
 	}
 
 	public Integer getAnnNum() {

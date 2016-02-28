@@ -24,8 +24,10 @@ import pers.nbu.netcourse.BaseApplication;
 import pers.nbu.netcourse.R;
 import pers.nbu.netcourse.adapter.AnnAdapter;
 import pers.nbu.netcourse.config.SystemConfig;
+import pers.nbu.netcourse.db.DB;
 import pers.nbu.netcourse.entity.AnnEntity;
 import pers.nbu.netcourse.fragment.BottomFragment;
+import pers.nbu.netcourse.util.LogUtil;
 
 
 public class MainActivity extends BaseActivity {
@@ -37,6 +39,10 @@ public class MainActivity extends BaseActivity {
     //底部导航栏
     private BottomFragment bottomFragment;
     private RadioGroup radioGroup;
+
+    private DB db=DB.getInstance();
+
+    private static int showNum=10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,10 +118,26 @@ public class MainActivity extends BaseActivity {
         }
     };
 
+
     /**
      * 初始化公告信息
      */
     protected void initAnn(){
+        if (db.ifexistData(DB.TABLE_ANNINFO)>0){
+            annLists.clear();
+            annLists.addAll(db.getAnnInfo(showNum));
+        }
+        else{
+            getAnn();
+        }
+
+        annAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 从服务器端下载公告信息
+     */
+    protected void getAnn(){
         /*获取所有公告信息*/
         AsyncHttpClient client = ((BaseApplication)getApplication()).getSharedHttpClient();
         client.post(SystemConfig.URL_ALLANN,new JsonHttpResponseHandler("utf-8"){
@@ -125,19 +147,14 @@ public class MainActivity extends BaseActivity {
                 try {
                     if (response.getBoolean("success")){
                         annLists.clear();
-                        annLists.addAll(JsonObj2Lists(response));
-                        annAdapter.notifyDataSetChanged();
-                        Log.i("success","true");
+                        JsonObj2Lists(response);
+                        LogUtil.i("success", "true");
                     }
                     else{
                         Toast.makeText(getApplicationContext(),"success：fail",Toast.LENGTH_LONG).show();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
+                } catch (JSONException e) {e.printStackTrace();}
             }
-
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
@@ -152,28 +169,52 @@ public class MainActivity extends BaseActivity {
      * @param jsonObject
      * @return
      */
-    protected ArrayList<AnnEntity> JsonObj2Lists(JSONObject jsonObject){
+    protected void JsonObj2Lists(JSONObject jsonObject){
         ArrayList<AnnEntity> lists=new ArrayList<>();
+        int annNum=0;
+        boolean find=false;
+        annNum=db.ifexistData(DB.TABLE_ANNINFO);
+        //解析获取到的json数据串（所有公告信息）
         try {
             JSONArray jsonArray = jsonObject.getJSONArray("returnData");
             JSONObject jobj;
             AnnEntity entity;
             for (int i = 0; i < jsonArray.length() ; i++) {
                 jobj = jsonArray.getJSONObject(i);
-                entity = new AnnEntity(jobj.getInt("annNum"),
-                        jobj.getString("annTitle"),
-                        jobj.getString("annCon"),
-                        jobj.getString("annUrl"),
-                        jobj.getString("annTime"),
-                        jobj.getString("teachName"),
-                        jobj.getString("courName")
-                );
-                lists.add(entity);
+                if (annNum>0){
+                    if (annNum == jobj.getInt("annNum"))
+                    {
+                        entity = new AnnEntity(jobj.getInt("annNum"),jobj.getString("annTitle"),
+                                jobj.getString("annCon"),jobj.getString("annUrl"),
+                                jobj.getString("annTime"),jobj.getString("teachName"),
+                                jobj.getString("courName"));
+                        lists.add(entity);
+                        find=true;
+                    }else if (find){
+                        entity = new AnnEntity(jobj.getInt("annNum"),jobj.getString("annTitle"),
+                                jobj.getString("annCon"),jobj.getString("annUrl"),
+                                jobj.getString("annTime"),jobj.getString("teachName"),
+                                jobj.getString("courName"));
+                        lists.add(entity);
+                    }
+                }
+                else {
+                    entity = new AnnEntity(jobj.getInt("annNum"),
+                            jobj.getString("annTitle"),
+                            jobj.getString("annCon"),
+                            jobj.getString("annUrl"),
+                            jobj.getString("annTime"),
+                            jobj.getString("teachName"),
+                            jobj.getString("courName")
+                    );
+                    lists.add(entity);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return lists;
+        if (lists.size()>0)
+            db.saveAnnInfo(lists);
     }
 
 

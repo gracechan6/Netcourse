@@ -44,8 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
                 android:text="发布人：张川 课程：计算机网络"
                 android:textSize="20dp"
                 android:textStyle="normal"/>
@@ -57,8 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
                 android:text="发布时间："
                 android:textSize="20dp"/>
 

@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
-    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/activity/AnnActivity.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/activity/MainActivity.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/adapter/AnnAdapter.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/config/SystemConfig.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/entity/AnnEntity.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/drawable/unread_bgorange_circle.xml" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/layout_announinfo.xml" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/values/colors.xml" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml" charset="UTF-8" />
-    <file url="PROJECT" charset="UTF-8" />
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/app/build.gradle" charset="UTF-8" />
   </component>
 </project>
