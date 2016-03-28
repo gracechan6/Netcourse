@@ -1,12 +1,16 @@
 package pers.nbu.netcourse.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
@@ -22,10 +26,22 @@ public class BaseActivity extends Activity {
 
 	protected Toolbar.LayoutParams lp;
 
+	/**
+	 * 条理进度对话框
+	 */
+	protected Dialog dialog;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ActivityCollector.addActivity(this);
+		LayoutInflater inflater=LayoutInflater.from(this);
+		View modifyView=inflater.inflate(R.layout.layout_progressbar_load, null);
+		dialog=new AlertDialog.Builder(this).
+				setView(modifyView).
+				create();
+		dialog.setCanceledOnTouchOutside(false);
+
 	}
 	
 	@Override

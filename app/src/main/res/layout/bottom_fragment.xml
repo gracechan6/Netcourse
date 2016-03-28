@@ -31,10 +31,10 @@
             android:drawableTop="@drawable/bottom_radiobtn_task_icon_select"/>
 
         <RadioButton
-            android:id="@+id/contacts"
+            android:id="@+id/more"
             style="@style/BottomRadioButton"
             android:text="@string/contacts"
-            android:drawableTop="@drawable/bottom_radiobtn_contacts_icon_select"/>
+            android:drawableTop="@drawable/bottom_radiobtn_more_icon_select"/>
 
         <RadioButton
             android:id="@+id/me"

@@ -11,7 +11,7 @@ import pers.nbu.netcourse.BaseApplication;
 import pers.nbu.netcourse.entity.AnnEntity;
 
 /**
- * Created by Chenss on 2015/10/12.
+ * Created by GraceChan on 2015/10/12.
  */
 public class DB {
     /**
