@@ -73,7 +73,7 @@ public class DB {
         int annnum=0;
         if (cursor.moveToFirst()){
             do {
-                if (count == 5)
+                if (count == 2)
                     return cursor.getInt(cursor.getColumnIndex(COL_ANNNUM));
                 annnum=cursor.getInt(cursor.getColumnIndex(COL_ANNNUM));
                 count++;

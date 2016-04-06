@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import pers.nbu.netcourse.R;
+import pers.nbu.netcourse.config.SystemConfig;
 
 public class AnnActivity extends BaseActivity {
 
@@ -17,7 +18,7 @@ public class AnnActivity extends BaseActivity {
         setContentView(R.layout.activity_ann);
         initToolBar();
         setTitle("通知公告");
-
+        setRightOfToolbar(true);
         initView();
     }
 
@@ -31,21 +32,14 @@ public class AnnActivity extends BaseActivity {
         attach = (TextView) findViewById(R.id.attach);
         tcName = (TextView) findViewById(R.id.tcName);
 
-        title.setText(getIntent().getStringExtra(MainActivity.ANNTITLE));
-        time.append(getIntent().getStringExtra(MainActivity.ANNTIME));
-        content.setText(Html.fromHtml(getIntent().getStringExtra(MainActivity.ANNCON)));
-        tcName.setText("发布人：" + getIntent().getStringExtra(MainActivity.TEACHNAME) + " 课程：" + getIntent().getStringExtra(MainActivity.COURNAME));
-        if (getIntent().getStringExtra(MainActivity.ANNURL)!=null || (getIntent().getStringExtra(MainActivity.ANNURL)).length()>0) {
-
-            attach.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //单击附件名后当如何如何;暂定下载下来再做本地预览。
-
-                }
-            });
+        title.setText(getIntent().getStringExtra(SystemConfig.ANNTITLE));
+        time.append(getIntent().getStringExtra(SystemConfig.ANNTIME));
+        content.setText(Html.fromHtml(getIntent().getStringExtra(SystemConfig.ANNCON)));
+        tcName.setText("发布人：" + getIntent().getStringExtra(SystemConfig.TEACHNAME) + " 课程：" + getIntent().getStringExtra(SystemConfig.COURNAME));
+        if (getIntent().getStringExtra(SystemConfig.ANNURL)==null){
+            attach.setVisibility(View.GONE);
         }
-        else attach.setVisibility(View.GONE);
+
     }
 
 }

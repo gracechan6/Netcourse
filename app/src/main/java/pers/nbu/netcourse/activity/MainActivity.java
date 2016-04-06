@@ -3,10 +3,8 @@ package pers.nbu.netcourse.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,8 +12,8 @@ import android.widget.Toast;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,6 +22,7 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import pers.nbu.netcourse.BaseApplication;
+import pers.nbu.netcourse.JsonTransform;
 import pers.nbu.netcourse.R;
 import pers.nbu.netcourse.adapter.AnnAdapter;
 import pers.nbu.netcourse.config.SystemConfig;
@@ -48,6 +47,7 @@ public class MainActivity extends BaseActivity {
     private RadioGroup radioGroup;
 
     private DB db=DB.getInstance();
+    private JsonTransform jsonTransform=JsonTransform.getInstance();
 
     private static int showNum=10;
 
@@ -68,13 +68,7 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    public static final String ANNTITLE="annTitle";
-    public static final String ANNCON="annCon";
-    public static final String ANNTIME="annTime";
-    public static final String ANNURL="annUrl";
-    public static final String TEACHNAME="teachName";
-    public static final String COURNAME="courName";
-    public static final String ANNNUM="annNum";
+
 
     protected void initView(){
         srlayout = (SwipeRefreshLayout) findViewById(R.id.srlayout);
@@ -91,13 +85,13 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
             Intent intent = new Intent(getApplicationContext(),AnnActivity.class);
-            intent.putExtra(ANNTITLE,annLists.get(position).getAnnTitle());
-            intent.putExtra(ANNCON,annLists.get(position).getAnnCon());
-            intent.putExtra(ANNTIME,annLists.get(position).getAnnTime());
-            intent.putExtra(ANNURL,annLists.get(position).getAnnUrl());
-            intent.putExtra(TEACHNAME,annLists.get(position).getTeachName());
-            intent.putExtra(COURNAME,annLists.get(position).getCourName());
-            intent.putExtra(ANNNUM,annLists.get(position).getAnnNum());
+            intent.putExtra(SystemConfig.ANNTITLE,annLists.get(position).getAnnTitle());
+            intent.putExtra(SystemConfig.ANNCON,annLists.get(position).getAnnCon());
+            intent.putExtra(SystemConfig.ANNTIME,annLists.get(position).getAnnTime());
+            intent.putExtra(SystemConfig.ANNURL,annLists.get(position).getAnnUrl());
+            intent.putExtra(SystemConfig.TEACHNAME,annLists.get(position).getTeachName());
+            intent.putExtra(SystemConfig.COURNAME,annLists.get(position).getCourName());
+            intent.putExtra(SystemConfig.ANNNUM,annLists.get(position).getAnnNum());
             startActivity(intent);
         }
     };
@@ -108,10 +102,41 @@ public class MainActivity extends BaseActivity {
     SwipeRefreshLayout.OnRefreshListener refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
-            LogUtil.i(getApplication().getClass().getSimpleName().toString(), "下拉刷新");
             //获取当前公告的最后一条消息的AnnNum，与服务器端比较看最新消息是否为这个id
-            //是，则不操作
-            //否，获取此id后的所有消息，然后保存到本地并更新进度
+            //是，则不操作,否，获取此id后的所有消息，然后保存到本地并更新进度
+            ArrayList<AnnEntity> arrayList=db.getAnnInfo(1);
+            if (arrayList!=null) {
+                LogUtil.d("test", String.valueOf(arrayList.get(0).getAnnNum()));
+                AsyncHttpClient client =((BaseApplication)getApplication()).getSharedHttpClient();
+                RequestParams params = new RequestParams("annNum",arrayList.get(0).getAnnNum());
+                client.post(SystemConfig.URL_UPDATEANN,params,new JsonHttpResponseHandler(SystemConfig.SERVER_CHAR_SET){
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        try {
+                            if (response.getBoolean("success") && !response.isNull("returnData")) {
+                                if (jsonTransform.turnToAnnLists(response)) {
+                                    initAnn();
+                                }
+                                LogUtil.i("success", "true");
+                            } else {
+                                Toast.makeText(getApplicationContext(), "success：fail", Toast.LENGTH_LONG).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        LogUtil.e(getClass().getSimpleName(), "刷新失败！");
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        srlayout.setRefreshing(false);
+                    }
+                });
+            }
             srlayout.setRefreshing(false);
         }
     };
@@ -161,104 +186,45 @@ public class MainActivity extends BaseActivity {
             annAdapter.notifyDataSetChanged();
         }
         else{
-            getAnn();
-        }
-    }
+            /*获取所有公告信息*/
+            AsyncHttpClient client = ((BaseApplication)getApplication()).getSharedHttpClient();
+            client.post(SystemConfig.URL_ALLANN, new JsonHttpResponseHandler(SystemConfig.SERVER_CHAR_SET) {
+                @Override
+                public void onStart() {
+                    super.onStart();
+                    dialog.show();
+                }
 
-    /**
-     * 从服务器端下载公告信息
-     */
-    protected void getAnn(){
-        /*获取所有公告信息*/
-        AsyncHttpClient client = ((BaseApplication)getApplication()).getSharedHttpClient();
-        client.post(SystemConfig.URL_ALLANN,new JsonHttpResponseHandler("utf-8"){
-            @Override
-            public void onStart() {
-                super.onStart();
-                dialog.show();
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
-                try {
-                    if (response.getBoolean("success")){
-                        JsonObj2Lists(response);
-                        LogUtil.i("success", "true");
-                    }
-                    else{
-                        Toast.makeText(getApplicationContext(),"success：fail",Toast.LENGTH_LONG).show();
-                    }
-                } catch (JSONException e) {e.printStackTrace();}
-            }
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-                Toast.makeText(getApplicationContext(),"连接失败",Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onFinish() {
-                super.onFinish();
-                dialog.dismiss();
-            }
-        });
-    }
-
-    /**
-     * 将获取到的json格式公告信息转换成相应格式
-     * @param jsonObject
-     * @return
-     */
-    protected void JsonObj2Lists(JSONObject jsonObject){
-        ArrayList<AnnEntity> lists=new ArrayList<>();
-        int annNum=0;
-        boolean find=false;
-        annNum=db.ifexistData(DB.TABLE_ANNINFO);
-        //解析获取到的json数据串（所有公告信息）
-        try {
-            JSONArray jsonArray = jsonObject.getJSONArray("returnData");
-            JSONObject jobj;
-            AnnEntity entity;
-            for (int i = 0; i < jsonArray.length() ; i++) {
-                jobj = jsonArray.getJSONObject(i);
-                if (annNum>0){
-                    if (annNum == jobj.getInt("annNum"))
-                    {
-                        entity = new AnnEntity(jobj.getInt("annNum"),jobj.getString("annTitle"),
-                                jobj.getString("annCon"),jobj.getString("annUrl"),
-                                jobj.getString("annTime"),jobj.getString("teachName"),
-                                jobj.getString("courName"));
-                        lists.add(entity);
-                        find=true;
-                    }else if (find){
-                        entity = new AnnEntity(jobj.getInt("annNum"),jobj.getString("annTitle"),
-                                jobj.getString("annCon"),jobj.getString("annUrl"),
-                                jobj.getString("annTime"),jobj.getString("teachName"),
-                                jobj.getString("courName"));
-                        lists.add(entity);
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    try {
+                        if (response.getBoolean("success")) {
+                            if (jsonTransform.turnToAnnLists(response)) {
+                                annLists.clear();
+                                annLists.addAll(db.getAnnInfo(showNum));
+                                annAdapter.notifyDataSetChanged();
+                            }
+                            //JsonObj2Lists(response);
+                            LogUtil.i("success", "true");
+                        } else {
+                            Toast.makeText(getApplicationContext(), "服务器端未有公告发布哦", Toast.LENGTH_LONG).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
                 }
-                else {
-                    entity = new AnnEntity(jobj.getInt("annNum"),
-                            jobj.getString("annTitle"),
-                            jobj.getString("annCon"),
-                            jobj.getString("annUrl"),
-                            jobj.getString("annTime"),
-                            jobj.getString("teachName"),
-                            jobj.getString("courName")
-                    );
-                    lists.add(entity);
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    LogUtil.e(getClass().getSimpleName(), "连接失败了！");
+                    Toast.makeText(getApplicationContext(), "连接失败", Toast.LENGTH_LONG).show();
                 }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        if (lists.size()>0){
-            db.saveAnnInfo(lists);
-            annLists.clear();
-            annLists.addAll(db.getAnnInfo(showNum));
-            annAdapter.notifyDataSetChanged();
+
+                @Override
+                public void onFinish() {
+                    dialog.dismiss();
+                }
+            });
         }
     }
 }
