@@ -125,7 +125,7 @@ public class BaseActivity extends Activity {
 			mRight.setText("");
 			mRight.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
 			mRight.setTextColor(getResources().getColor(R.color.bottom_text_selected));
-			mRight.setPadding(0, 0, 10, 0);
+			mRight.setPadding(0, 0, 20, 0);
 			mRight.setGravity(Gravity.CENTER);
 			mToolBar.addView(mRight, lp);
 		}

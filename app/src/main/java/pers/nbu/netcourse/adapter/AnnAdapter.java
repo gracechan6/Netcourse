@@ -53,7 +53,7 @@ public class AnnAdapter extends BaseAdapter{
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView==null){
             viewHolder = new ViewHolder();
-            convertView = inflater.inflate(R.layout.layout_announinfo, null);
+            convertView = inflater.inflate(R.layout.layout_announshow, null);
             viewHolder.title = (TextView) convertView.findViewById(R.id.title);
             viewHolder.content = (TextView) convertView.findViewById(R.id.content);
             convertView.setTag(viewHolder);

@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pers.nbu.netcourse.BaseApplication;
+import pers.nbu.netcourse.config.SystemConfig;
 import pers.nbu.netcourse.entity.AnnEntity;
+import pers.nbu.netcourse.entity.TaskEntity;
 
 /**
  * Created by GraceChan on 2015/10/12.
@@ -32,16 +34,8 @@ public class DB {
     /**
      * 表名
      */
-    public static final String TABLE_ANNINFO = "tbAnnInfo";
-        //字段名
-        public final String COL_ANNNUM = "AnnNum";
-        public final String COL_ANNTITLE = "AnnTitle";
-        public final String COL_ANNCON = "AnnCon";
-        public final String COL_ANNURL = "AnnUrl";
-        public final String COL_ANNTIME = "AnnTime";
-        public final String COL_COURNAME = "CourName";
-        public final String COL_TEACHNAME = "TeachName";
-        public final String COL_ANNID = "AnnId";
+    public static final String TABLE_ANNSHOW = "tbAnnShow";
+    public static final String TABLE_TASKSHOW = "tbTaskShow";
 
 
     /**
@@ -63,25 +57,27 @@ public class DB {
         return DB;
     }
 
+//公共方法
     /**
      * 判断表中是否存在数据
      * @param tableName
      */
-    public int ifexistData(String tableName){
+    public int ifexistData(String tableName,String num){
         Cursor cursor=db.query(tableName,null,null,null,null,null,null);
         int count=1;
         int annnum=0;
         if (cursor.moveToFirst()){
             do {
                 if (count == 2)
-                    return cursor.getInt(cursor.getColumnIndex(COL_ANNNUM));
-                annnum=cursor.getInt(cursor.getColumnIndex(COL_ANNNUM));
+                    return cursor.getInt(cursor.getColumnIndex(num));
+                annnum=cursor.getInt(cursor.getColumnIndex(num));
                 count++;
             }while (cursor.moveToNext());
         }
         return annnum;
     }
 
+//start Ann DB
     /**
      * 表中数据总条数
      * @param tableName
@@ -91,8 +87,6 @@ public class DB {
 
         return cursor.getCount();//?not sure
     }
-
-
 
     /**
      * 将服务器端获取到的公告信息同步存储到本地数据
@@ -104,14 +98,14 @@ public class DB {
         db.beginTransaction();
         for (int i = 0; i < anns.size() ; i++) {
             values=new ContentValues();
-            values.put(COL_ANNNUM, anns.get(i).getAnnNum());
-            values.put(COL_ANNTITLE, anns.get(i).getAnnTitle());
-            values.put(COL_ANNCON, anns.get(i).getAnnCon());
-            values.put(COL_ANNURL, anns.get(i).getAnnUrl());
-            values.put(COL_ANNTIME, anns.get(i).getAnnTime());
-            values.put(COL_TEACHNAME, anns.get(i).getTeachName());
-            values.put(COL_COURNAME, anns.get(i).getCourName());
-            db.insert(TABLE_ANNINFO, null, values);
+            values.put(SystemConfig.ANNNUM, anns.get(i).getAnnNum());
+            values.put(SystemConfig.ANNTITLE, anns.get(i).getAnnTitle());
+            values.put(SystemConfig.ANNCON, anns.get(i).getAnnCon());
+            values.put(SystemConfig.ANNURL, anns.get(i).getAnnUrl());
+            values.put(SystemConfig.ANNTIME, anns.get(i).getAnnTime());
+            values.put(SystemConfig.TEACHNAME, anns.get(i).getTeachName());
+            values.put(SystemConfig.COURNAME, anns.get(i).getCourName());
+            db.insert(TABLE_ANNSHOW, null, values);
         }
         db.setTransactionSuccessful();
         db.endTransaction();
@@ -124,21 +118,72 @@ public class DB {
      */
     public ArrayList<AnnEntity> getAnnInfo(int num){
         ArrayList<AnnEntity> anns= new ArrayList<>();
-        Cursor cursor=db.rawQuery("select * from "+TABLE_ANNINFO+" order by AnnId desc limit 0,"+num,null);
+        Cursor cursor=db.rawQuery("select * from "+TABLE_ANNSHOW+" order by AnnId desc limit 0,"+num,null);
         if (cursor.moveToFirst()){
             do {
-                AnnEntity ann = new AnnEntity(cursor.getInt(cursor.getColumnIndex(COL_ANNID)),
-                        cursor.getInt(cursor.getColumnIndex(COL_ANNNUM)),
-                        cursor.getString(cursor.getColumnIndex(COL_ANNTITLE)),
-                        cursor.getString(cursor.getColumnIndex(COL_ANNCON)),
-                        cursor.getString(cursor.getColumnIndex(COL_ANNURL)),
-                        cursor.getString(cursor.getColumnIndex(COL_ANNTIME)),
-                        cursor.getString(cursor.getColumnIndex(COL_TEACHNAME)),
-                        cursor.getString(cursor.getColumnIndex(COL_COURNAME)));
+                AnnEntity ann = new AnnEntity(cursor.getInt(cursor.getColumnIndex(SystemConfig.ANNID)),
+                        cursor.getInt(cursor.getColumnIndex(SystemConfig.ANNNUM)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.ANNTITLE)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.ANNCON)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.ANNURL)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.ANNTIME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.TEACHNAME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.COURNAME)));
                 anns.add(ann);
             }while (cursor.moveToNext());
         }
         return anns;
     }
+
+//end Ann DB
+//start Task DB
+    /**
+     * 将服务器端获取到的公告信息同步存储到本地数据
+     * @param tasks
+     */
+    public void saveTaskShow(List<TaskEntity> tasks){
+
+        ContentValues values=null;
+        db.beginTransaction();
+        for (int i = 0; i < tasks.size() ; i++) {
+            values=new ContentValues();
+            values.put(SystemConfig.TASKNUM, tasks.get(i).getTaskNum());
+            values.put(SystemConfig.TASKTITLE, tasks.get(i).getTaskTitle());
+            values.put(SystemConfig.TASKTIME, tasks.get(i).getTaskTime());
+            values.put(SystemConfig.ENDTIME, tasks.get(i).getEndTime());
+            values.put(SystemConfig.TEACHNAME, tasks.get(i).getTeachName());
+            values.put(SystemConfig.COURNAME, tasks.get(i).getCourName());
+            values.put(SystemConfig.TASKREQUIRE, tasks.get(i).getCourName());
+            db.insert(TABLE_TASKSHOW, null, values);
+        }
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    /**
+     * 从本地数据库获取num条数据
+     * @param num
+     * @return
+     */
+    public ArrayList<TaskEntity> getTaskShow(int num){
+        ArrayList<TaskEntity> tasks= new ArrayList<>();
+        Cursor cursor=db.rawQuery("select * from "+TABLE_TASKSHOW+" order by TaskId desc limit 0,"+num,null);
+        if (cursor.moveToFirst()){
+            do {
+                TaskEntity task = new TaskEntity(cursor.getInt(cursor.getColumnIndex(SystemConfig.TASKID)),
+                        cursor.getInt(cursor.getColumnIndex(SystemConfig.TASKNUM)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.TASKTITLE)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.COURNAME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.TEACHNAME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.TASKTIME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.ENDTIME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.TASKREQUIRE)));
+                tasks.add(task);
+            }while (cursor.moveToNext());
+        }
+        return tasks;
+    }
+//end Ann DB
+
 
 }

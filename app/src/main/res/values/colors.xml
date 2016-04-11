@@ -17,12 +17,19 @@
     <color name="red_select">#B70707</color>
     <color name="grey_default">#7D8188</color>
 
-    <color name="unread_orange">#EB6A14</color>
+    <color name="orange">#EB6A14</color>
     <color name="announ_title">#3F444B</color>
     <color name="announ_content">#C2C8D0</color>
     <color name="divider_color">#D1DAE7</color>
 
     <color name="bg_btn_send">#858E99</color>
     <color name="bg_btn_send_selected">#858EA9</color>
+
+    <color name="more_tv_select">#D9D9D9</color>
+    <color name="more_tv_nomal">#fff</color>
+    <color name="greyDeep">#676668</color>
+
+    <color name="btn_unClick">#0186D1</color>
+    <color name="btn_Click">#017ABC</color>
 
 </resources>

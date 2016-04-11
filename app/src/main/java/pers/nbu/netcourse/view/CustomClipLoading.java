@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pers.nbu.netcourse.processbar;
+package pers.nbu.netcourse.view;
 
 import android.content.Context;
 import android.graphics.drawable.ClipDrawable;

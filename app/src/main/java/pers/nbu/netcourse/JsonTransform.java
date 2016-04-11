@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import pers.nbu.netcourse.db.DB;
 import pers.nbu.netcourse.entity.AnnEntity;
+import pers.nbu.netcourse.entity.TaskEntity;
 
 /**
  * Created by GraceChan on 2016/4/6.
@@ -26,13 +27,13 @@ public class JsonTransform {
     }
 
     /**
-     * 将获取到的json格式公告信息转换成公告格式
+     * 将获取到的json格式公告信息转换成公告阅读格式
      * @param jsonObject
      * @return
      */
     public Boolean turnToAnnLists(JSONObject jsonObject) {
         ArrayList<AnnEntity> lists = new ArrayList<>();
-        int annNum = 0;
+//        int annNum = 0;
         //boolean find = false;
         //annNum = db.ifexistData(DB.TABLE_ANNINFO);
         //解析获取到的json数据串（所有公告信息）
@@ -58,15 +59,15 @@ public class JsonTransform {
 //                        lists.add(entity);
 //                    }
 //                } else {
-                    entity = new AnnEntity(jobj.getInt("annNum"),
-                            jobj.getString("annTitle"),
-                            jobj.getString("annCon"),
-                            jobj.getString("annUrl"),
-                            jobj.getString("annTime"),
-                            jobj.getString("teachName"),
-                            jobj.getString("courName")
-                    );
-                    lists.add(entity);
+                entity = new AnnEntity(jobj.getInt("annNum"),
+                        jobj.getString("annTitle"),
+                        jobj.getString("annCon"),
+                        jobj.getString("annUrl"),
+                        jobj.getString("annTime"),
+                        jobj.getString("teachName"),
+                        jobj.getString("courName")
+                );
+                lists.add(entity);
 //                }
             }
         } catch (JSONException e) {
@@ -74,6 +75,41 @@ public class JsonTransform {
         }
         if (lists.size() > 0) {
             db.saveAnnInfo(lists);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 将获取到的json格式公告信息转换成任务阅读格式
+     * @param jsonObject
+     * @return
+     */
+    public Boolean turnToTaskLists(JSONObject jsonObject) {
+        ArrayList<TaskEntity> lists = new ArrayList<>();
+
+        //解析获取到的json数据串（所有公告信息）
+        try {
+            JSONArray jsonArray = jsonObject.getJSONArray("returnData");
+            JSONObject jobj;
+            TaskEntity entity;
+            for (int i = 0; i < jsonArray.length(); i++) {
+                jobj = jsonArray.getJSONObject(i);
+                entity = new TaskEntity(jobj.getInt("taskNum"),
+                        jobj.getString("taskTitle"),
+                        jobj.getString("courName"),
+                        jobj.getString("teachName"),
+                        jobj.getString("taskTime"),
+                        jobj.getString("endTime"),
+                        jobj.getString("taskRequire")
+                );
+                lists.add(entity);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (lists.size() > 0) {
+            db.saveTaskShow(lists);
             return true;
         }
         return false;
