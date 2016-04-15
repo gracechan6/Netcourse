@@ -52,8 +52,16 @@ public class SystemConfig {
     public static final String TREEID="Treeid";
     public static final String OPUSNUM="OpusNum";
 
-
-
-
+        //Attend
+    public static final String ATTDENCEID="AttdenceId";
+    public static final String ATTDENCENUM="AttdenceNum";
+    public static final String ACTNUM="ActNum";
+    public static final String PLACENAME="PlaceName";
+    public static final String ATTDENCEWEEK="AttdenceWeek";
+    public static final String STATUSTIME="StatusTime";
+    public static final String STANAME="StaName";
+    public static final String STATUS="Status";
+    public static final String ATTDENCECLASS="AttdenceClass";
+    public static final String UPDATENUM="UpdateNum";
 
 }

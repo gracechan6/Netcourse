@@ -59,7 +59,7 @@ public class TaskManageActivity extends BaseActivity {
         taskLsv = (SwipeMenuListView) findViewById(R.id.taskLsv);
         taskAdapter = new TaskManageAdapter(taskLists,getApplicationContext());
         taskLsv.setAdapter(taskAdapter);
-        taskLsv.setOnItemClickListener(annClickListener);
+        taskLsv.setOnItemClickListener(taskClickListener);
     }
 
     /**
@@ -113,9 +113,16 @@ public class TaskManageActivity extends BaseActivity {
         }
     }
 
+    /**
+     * 初始化数据
+     */
     private void initData(){
-        if (db.ifexistData(DB.TABLE_TASKMANAGESHOW,SystemConfig.TASKNUM)>0)
-            getTaskFromDB(showNum);
+
+        ArrayList<TaskManageEntity> arrayList = db.getTaskManageShow(1);
+        if (arrayList != null && arrayList.size()>0) {
+            LogUtil.d("test", String.valueOf(arrayList.get(0).getTaskNum()));
+            getTask(1, PreferenceUtils.getUserId(getApplicationContext()),showNum,arrayList.get(0).getTaskNum());
+        }
         else
             getTask(1, PreferenceUtils.getUserId(getApplicationContext()),showNum,0);
     }
@@ -129,14 +136,14 @@ public class TaskManageActivity extends BaseActivity {
             //获取当前任务的最后一条消息的AnnNum，与服务器端比较看最新消息是否为这个id
             //是，则不操作,否，获取此id后的所有消息，然后保存到本地并更新进度
             ArrayList<TaskManageEntity> arrayList = db.getTaskManageShow(1);
-            if (arrayList != null) {
+            if (arrayList != null && arrayList.size()>0) {
                 LogUtil.d("test", String.valueOf(arrayList.get(0).getTaskNum()));
                 getTask(2, PreferenceUtils.getUserId(getApplicationContext()),showNum,arrayList.get(0).getTaskNum());
             }
         }
     };
 
-    protected AdapterView.OnItemClickListener annClickListener = new AdapterView.OnItemClickListener() {
+    protected AdapterView.OnItemClickListener taskClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
             if (position+1==taskLists.size()){
@@ -160,6 +167,7 @@ public class TaskManageActivity extends BaseActivity {
 
     /**
      * 更新本地任务显示数据
+     * @param show   从本地数据库获取条数
      */
     protected void getTaskFromDB(int show){
         taskLists.clear();
@@ -173,8 +181,9 @@ public class TaskManageActivity extends BaseActivity {
     /**
      * 从服务器端获取数据
      * @param flag   区分下拉刷新2还是初始化获取1
-     * @param userNum
-     * @param showTask
+     * @param userNum    用户名
+     * @param showTask   显示数量
+     * @param taskNum   任务号
      */
     protected void getTask(final int flag,String userNum, final int showTask,int taskNum){
         AsyncHttpClient client = ((BaseApplication)getApplication()).getSharedHttpClient();
@@ -197,7 +206,11 @@ public class TaskManageActivity extends BaseActivity {
                         }
                         LogUtil.i("test", getClass().getSimpleName()+"true,获取数据成功");
                     } else {
-                        if (flag==1) Toast.makeText(getApplicationContext(), "服务器端未有任务记录!", Toast.LENGTH_SHORT).show();
+                        if (flag==1) {
+                            //Toast.makeText(getApplicationContext(), "服务器端未有任务记录!", Toast.LENGTH_SHORT).show();
+                            LogUtil.i("test",getClass().getSimpleName()+"服务器端未有新的任务记录!");
+                            getTaskFromDB(showTask);
+                        }
                         else Toast.makeText(getApplicationContext(), "已是最新", Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
@@ -207,7 +220,7 @@ public class TaskManageActivity extends BaseActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                LogUtil.e("test", getClass().getSimpleName()+"连接失败！");
+                LogUtil.e("test", getClass().getSimpleName() + "连接失败！");
                 if (flag==1)
                     Toast.makeText(getApplicationContext(), "连接失败", Toast.LENGTH_SHORT).show();
                 else

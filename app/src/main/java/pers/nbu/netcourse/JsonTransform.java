@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import pers.nbu.netcourse.db.DB;
 import pers.nbu.netcourse.entity.AnnEntity;
+import pers.nbu.netcourse.entity.AttendEntity;
 import pers.nbu.netcourse.entity.TaskEntity;
 import pers.nbu.netcourse.entity.TaskManageEntity;
 
@@ -89,7 +90,7 @@ public class JsonTransform {
     public Boolean turnToTaskLists(JSONObject jsonObject) {
         ArrayList<TaskEntity> lists = new ArrayList<>();
 
-        //解析获取到的json数据串（所有公告信息）
+        //解析获取到的json数据串（所有任务信息）
         try {
             JSONArray jsonArray = jsonObject.getJSONArray("returnData");
             JSONObject jobj;
@@ -125,7 +126,7 @@ public class JsonTransform {
     public Boolean turnToTaskMLists(JSONObject jsonObject) {
         ArrayList<TaskManageEntity> lists = new ArrayList<>();
 
-        //解析获取到的json数据串（所有公告信息）
+        //解析获取到的json数据串（所有任务信息）
         try {
             JSONArray jsonArray = jsonObject.getJSONArray("returnData");
             JSONObject jobj;
@@ -148,6 +149,46 @@ public class JsonTransform {
         }
         if (lists.size() > 0) {
             db.saveTaskManageShow(lists);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 将获取到的json格式学生考勤情况信息转换成考勤格式
+     * @param jsonObject
+     * @return
+     */
+    public Boolean turnToAttendMLists(JSONObject jsonObject) {
+        ArrayList<AttendEntity> lists = new ArrayList<>();
+
+        //解析获取到的json数据串（所有公告信息）
+        try {
+            JSONArray jsonArray = jsonObject.getJSONArray("returnData");
+            JSONObject jobj;
+            AttendEntity entity;
+            for (int i = 0; i < jsonArray.length(); i++) {
+                jobj = jsonArray.getJSONObject(i);
+                entity = new AttendEntity(
+                        jobj.getInt("attdenceNum"),
+                        jobj.getInt("actNum"),
+                        jobj.getString("placeName"),
+                        jobj.getString("courName"),
+                        jobj.getString("teachName"),
+                        jobj.getString("attdenceWeek"),
+                        jobj.getString("statusTime"),
+                        jobj.getString("staName"),
+                        jobj.getString("status"),
+                        jobj.getString("attdenceClass"),
+                        0
+                );
+                lists.add(entity);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (lists.size() > 0) {
+            db.saveAttend(lists);
             return true;
         }
         return false;

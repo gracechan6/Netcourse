@@ -10,6 +10,8 @@ public class PreferenceUtils {
     public static final String PREFERENCE = "PREFERENCE";
 
     //保存用户账号
+    public static final String PREFERENCE_EQID = "PREFERENCE_EQID";//记录登陆帐号 只记录一次  不允许设备登陆其他人的帐号
+
     public static final String PREFERENCE_USERNAME = "PREFERENCE_USERNAME";
     public static final String PREFERENCE_USERID = "PREFERENCE_USERID";
     //保存密码
@@ -24,8 +26,10 @@ public class PreferenceUtils {
     public static void saveLoginInfo(Context context,String userId,String pwd){
         SharedPreferences sp=context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor=sp.edit();
-        editor.putString(PREFERENCE_USERID,userId);
-        editor.putString(PREFERENCE_PASSWORD,pwd);
+        editor.putString(PREFERENCE_USERID, userId);
+        editor.putString(PREFERENCE_PASSWORD, pwd);
+        if (sp.getString(PREFERENCE_EQID,"").equals(""))
+            editor.putString(PREFERENCE_EQID,userId);
         editor.commit();
     }
 
@@ -41,6 +45,11 @@ public class PreferenceUtils {
     public static String getUserName(Context context){
         SharedPreferences sp=context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE);
         return sp.getString(PREFERENCE_USERNAME,"");
+    }
+
+    public static String getEqId(Context context){
+        SharedPreferences sp=context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE);
+        return sp.getString(PREFERENCE_EQID,"");
     }
 
     public static String getUserId(Context context){

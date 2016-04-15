@@ -51,14 +51,12 @@ public class MainActivity extends BaseActivity {
     private List<AnnEntity> annLists;
     private List<TaskEntity> taskLists;
 
-    //加载更多
-    private TextView footer;
     /*首页*/
     private ScrollView index;
     private ListViewForScrollView annShowLsv,taskShowLsv;
 
     /*更多*/
-    private LinearLayout more;
+    private LinearLayout more,me;
 
     //底部导航栏
     private BottomFragment bottomFragment;
@@ -88,7 +86,6 @@ public class MainActivity extends BaseActivity {
      * 初始化控件
      */
     protected void initView(){
-        footer= (TextView) getLayoutInflater().inflate(R.layout.listview_foot,null);
         annLists = new ArrayList<>();
         taskLists = new ArrayList<>();
 
@@ -121,6 +118,8 @@ public class MainActivity extends BaseActivity {
 
         //more
         more = (LinearLayout) findViewById(R.id.more);
+        //me
+        me = (LinearLayout) findViewById(R.id.me);
     }
 
     //点击
@@ -179,14 +178,12 @@ public class MainActivity extends BaseActivity {
                     showView(3);setTitle("任务");initTask(3,taskShowNum);
                     break;
                 case R.id.more:
-                    if (PreferenceUtils.getLOGINVAL())
-                    {showView(4);setTitle("更多");}
-                    else
-                        showLogin();
+                    if (PreferenceUtils.getLOGINVAL()) {showView(4);setTitle("更多");}
+                    else showLogin(4);
                     break;
                 case R.id.me:
-                    if (PreferenceUtils.getLOGINVAL())
-                    {showView(5);setTitle("我");}
+                    if (PreferenceUtils.getLOGINVAL()) {showView(5);setTitle("我");}
+                    else showLogin(5);
                     break;
                 default:
                     break;
@@ -196,7 +193,7 @@ public class MainActivity extends BaseActivity {
 
     /**
      * 底部控件选择控制显隐
-     * @param select
+     * @param select 底部选择了第几个
      */
     protected void showView(int select){
         switch (select){
@@ -204,26 +201,31 @@ public class MainActivity extends BaseActivity {
                     srlayout.setVisibility(View.GONE);
                     taskLayout.setVisibility(View.GONE);
                     more.setVisibility(View.GONE);
+                    me.setVisibility(View.GONE);
                     break;
             case 2: index.setVisibility(View.GONE);
                     srlayout.setVisibility(View.VISIBLE);
                     taskLayout.setVisibility(View.GONE);
                     more.setVisibility(View.GONE);
+                    me.setVisibility(View.GONE);
                     break;
             case 3: index.setVisibility(View.GONE);
                     srlayout.setVisibility(View.GONE);
                     taskLayout.setVisibility(View.VISIBLE);
                     more.setVisibility(View.GONE);
+                    me.setVisibility(View.GONE);
                     break;
             case 4: index.setVisibility(View.GONE);
                     srlayout.setVisibility(View.GONE);
                     taskLayout.setVisibility(View.GONE);
                     more.setVisibility(View.VISIBLE);
+                    me.setVisibility(View.GONE);
                     break;
             case 5: index.setVisibility(View.GONE);
                     srlayout.setVisibility(View.GONE);
                     taskLayout.setVisibility(View.GONE);
                     more.setVisibility(View.GONE);
+                    me.setVisibility(View.VISIBLE);
                     break;
             default:break;
         }
@@ -246,48 +248,17 @@ public class MainActivity extends BaseActivity {
             //获取当前公告的最后一条消息的AnnNum，与服务器端比较看最新消息是否为这个id
             //是，则不操作,否，获取此id后的所有消息，然后保存到本地并更新进度
             ArrayList<AnnEntity> arrayList=db.getAnnInfo(1);
-            if (arrayList!=null) {
+            if (arrayList!=null  && arrayList.size()>0) {
                 LogUtil.d("test", String.valueOf(arrayList.get(0).getAnnNum()));
-                AsyncHttpClient client =((BaseApplication)getApplication()).getSharedHttpClient();
-                RequestParams params = new RequestParams("annNum",arrayList.get(0).getAnnNum());
-                client.post(SystemConfig.URL_UPDATEANN,params,new JsonHttpResponseHandler(SystemConfig.SERVER_CHAR_SET){
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        try {
-                            if (response.getBoolean("success") && !response.isNull("returnData")) {
-                                if (jsonTransform.turnToAnnLists(response)) {
-                                    getAnnFromDB(2, showNum);
-                                }
-                                LogUtil.i("success", "true");
-                            } else {
-                                Toast.makeText(getApplicationContext(), "已是最新", Toast.LENGTH_SHORT).show();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-
-                        LogUtil.e(getClass().getSimpleName(), "刷新失败！");
-                        Toast.makeText(getApplicationContext(), "刷新失败！", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFinish() {
-                        srlayout.setRefreshing(false);
-                    }
-                });
+                getAnn(2, arrayList.get(0).getAnnNum(), showNum,2 );
             }
-            //srlayout.setRefreshing(false);
         }
     };
 
     /**
      * 更新本地公告显示数据
      * @param flag   区分 是首页 1 显示还是公告栏 2显示
-     * @param show
+     * @param show 显示数量
      */
     protected void getAnnFromDB(int flag,int show){
         annLists.clear();
@@ -300,53 +271,72 @@ public class MainActivity extends BaseActivity {
     }
     /**
      * 初始化公告信息
-     * @param flag 区分首页显示还是公告栏显示
+     * @param flag 区分首页1显示还是公告栏显示
      * @param num 显示条数
      */
     protected void initAnn(int flag,int num){
-        final int flags=flag,nums=num;
-        if (db.ifexistData(DB.TABLE_ANNSHOW,SystemConfig.ANNNUM)>0){
-            getAnnFromDB(flags,nums);
+        ArrayList<AnnEntity> arrayList = db.getAnnInfo(1);
+        if (arrayList != null && arrayList.size()>0) {
+            LogUtil.d("test", String.valueOf(arrayList.get(0).getAnnNum()));
+            getAnn(1, arrayList.get(0).getAnnNum(), num, flag);
         }
-        else{
-            /*获取所有公告信息*/
-            AsyncHttpClient client = ((BaseApplication)getApplication()).getSharedHttpClient();
-            client.post(SystemConfig.URL_ALLANN, new JsonHttpResponseHandler(SystemConfig.SERVER_CHAR_SET) {
-                @Override
-                public void onStart() {
-                    dialog.show();
-                }
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    try {
-                        if (response.getBoolean("success") && !response.isNull("returnData")) {
-                            if (jsonTransform.turnToAnnLists(response)) {
-                                getAnnFromDB(flags, nums);
-                            }
-                            //JsonObj2Lists(response);
-                            LogUtil.i("success", "true");
-                        } else {
-                            Toast.makeText(getApplicationContext(), "服务器端未有公告发布!", Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    LogUtil.e("test", "连接失败！"+throwable.toString());
-                    Toast.makeText(getApplicationContext(), "连接失败", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFinish() {
-                    dialog.dismiss();
-                }
-            });
-        }
+        else
+            getAnn(1, 0, num, flag);
     }
+
+    /**
+     * 从服务器端获取公告信息并更新公告
+     * @param flag   区分下拉刷新还是进去刷新1
+     * @param annNum 获取服务器 annNum 大于 提供的值
+     * @param showAnn 从数据库获取显示的数量
+     * @param flags 区分 是首页1显示还是公告栏2显示
+     */
+    protected void getAnn(final int flag,int annNum, final int showAnn, final int flags){
+        AsyncHttpClient client =((BaseApplication)getApplication()).getSharedHttpClient();
+        RequestParams params = new RequestParams("annNum",annNum);
+        client.post(SystemConfig.URL_UPDATEANN,params,new JsonHttpResponseHandler(SystemConfig.SERVER_CHAR_SET){
+            @Override
+            public void onStart() {
+                if (flag==1) dialog.show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    if (response.getBoolean("success") && !response.isNull("returnData")) {
+                        if (jsonTransform.turnToAnnLists(response)) {
+                            getAnnFromDB(flags, showAnn);
+                        }
+                        LogUtil.i("success", getClass().getSimpleName()+"Anntrue");
+                    } else {
+                        if (flag==1) {
+                            LogUtil.i("test", getClass().getSimpleName() + "服务器端未有更多的公告发布!");//Toast.makeText(getApplicationContext(), "服务器端未有任务发布!", Toast.LENGTH_SHORT).show();
+                            getAnnFromDB(flags, showAnn);
+                        }
+                        else Toast.makeText(getApplicationContext(), "已是最新", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                LogUtil.e("test", getClass().getSimpleName() + "ann连接失败！");
+                if (flag==1)
+                    Toast.makeText(getApplicationContext(), "连接失败", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getApplicationContext(), "刷新失败", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFinish() {
+                if (flag==1) dialog.dismiss();
+                else srlayout.setRefreshing(false);
+            }
+        });
+    }
+
 //公告========end
 
 //任务========start
@@ -366,20 +356,25 @@ public class MainActivity extends BaseActivity {
     }
     /**
      * 初始化任务信息
+     * @param flag   区分 是首页1显示还是任务栏3显示
+     * @param num 显示条数
      */
     protected void initTask(int flag,int num){
-        final int flags=flag;
-        if (db.ifexistData(DB.TABLE_TASKSHOW,SystemConfig.TASKNUM)>0){
-            getTaskFromDB(flags, num);
+        ArrayList<TaskEntity> arrayList = db.getTaskShow(1);
+        if (arrayList != null && arrayList.size()>0) {
+            LogUtil.d("test", String.valueOf(arrayList.get(0).getTaskNum()));
+            getTask(1, arrayList.get(0).getTaskNum(),taskShowNum,3);
         }
-        else{
-            /*获取任务信息*/
-            getTask(1,0,num,flag);
-        }
+        else
+            getTask(1, 0,taskShowNum,3);
     }
 
     /**
      * 从服务器端获取数据
+     * @param flag   区分下拉刷新还是进去刷新1
+     * @param taskNum 获取服务器 taskNum 大于 提供的值
+     * @param showTask 从数据库获取显示的数量
+     * @param flags 区分 是首页1显示还是任务栏3显示
      */
     protected void getTask(final int flag,int taskNum, final int showTask, final int flags){
         AsyncHttpClient client = ((BaseApplication)getApplication()).getSharedHttpClient();
@@ -398,9 +393,12 @@ public class MainActivity extends BaseActivity {
                         if (jsonTransform.turnToTaskLists(response)) {
                             getTaskFromDB(flags, showTask);
                         }
-                        LogUtil.i("success", "true");
+                        LogUtil.i("success", getClass().getSimpleName()+"task true");
                     } else {
-                        if (flag==1) Toast.makeText(getApplicationContext(), "服务器端未有任务发布!", Toast.LENGTH_SHORT).show();
+                        if (flag==1) {
+                            LogUtil.i("test", getClass().getSimpleName() + "服务器端未有更多的任务发布!");//Toast.makeText(getApplicationContext(), "服务器端未有任务发布!", Toast.LENGTH_SHORT).show();
+                            getTaskFromDB(flags, showTask);
+                        }
                         else Toast.makeText(getApplicationContext(), "已是最新", Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
@@ -410,7 +408,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                LogUtil.e("test", "连接失败！");
+                LogUtil.e("test", getClass().getSimpleName()+"task连接失败！");
                 if (flag==1)
                     Toast.makeText(getApplicationContext(), "连接失败", Toast.LENGTH_SHORT).show();
                 else
@@ -434,28 +432,32 @@ public class MainActivity extends BaseActivity {
             //获取当前任务的最后一条消息的AnnNum，与服务器端比较看最新消息是否为这个id
             //是，则不操作,否，获取此id后的所有消息，然后保存到本地并更新进度
             ArrayList<TaskEntity> arrayList = db.getTaskShow(1);
-            if (arrayList != null) {
+            if (arrayList != null  && arrayList.size()>0) {
                 LogUtil.d("test", String.valueOf(arrayList.get(0).getTaskNum()));
                 getTask(2, arrayList.get(0).getTaskNum(),3,taskShowNum);
             }
         }
     };
 
-    protected void showLogin(){
+    /**
+     * 显示登录界面
+     * @param flag 区分点击更多4还是点击我5跳转的
+     */
+    protected void showLogin(final int flag){
         AlertDialog.Builder builder  = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("未登录") ;
         builder.setMessage("是否登录？") ;
         builder.setPositiveButton("否", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                LogUtil.d("test", String.valueOf(i));
+                LogUtil.d("test","不登陆"+ String.valueOf(i));
             }
         });
         builder.setNegativeButton("是", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                LogUtil.d("test",String.valueOf(i));
-                startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), 4);
+                LogUtil.d("test", "登陆"+String.valueOf(i));
+                startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), flag);
             }
         });
         builder.show();
@@ -472,7 +474,11 @@ public class MainActivity extends BaseActivity {
                 showView(4);setTitle("更多");
             }
         }else if (requestCode==5){
-            LogUtil.i("test","我  返回");
+            if(resultCode == Activity.RESULT_OK) {
+                LogUtil.i("test", "我  返回");
+                showView(5);
+                setTitle("我");
+            }
         }
 
     }
@@ -496,4 +502,27 @@ public class MainActivity extends BaseActivity {
     }
 
 //更多========end
+
+//我========start
+    public void showActionSheet(View view){
+        LogUtil.i("test","showAtionSheet");
+    }
+
+    public void doClearAnnData(View view){
+        LogUtil.i("test","doClearAnnData");
+    }
+
+    public void doClearTaskData(View view){
+        LogUtil.i("test","doClearTaskData");
+    }
+
+    public void doClearTaskMData(View view){
+        LogUtil.i("test","doClearTaskMData");
+    }
+
+    public void doClearAttendData(View view){
+        LogUtil.i("test","doClearAttendData");
+    }
+
+//我========end
 }

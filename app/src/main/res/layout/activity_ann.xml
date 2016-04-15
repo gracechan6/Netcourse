@@ -30,10 +30,9 @@
             <TextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_height="60dp"
                 android:layout_marginLeft="10dp"
-                android:gravity="center_horizontal"
+                android:gravity="center"
                 android:text="addasxfdsfsd圣诞贺卡"
                 android:textSize="25dp"
                 android:textStyle="bold"/>
@@ -42,9 +41,9 @@
                 android:id="@+id/tcName"
                 android:layout_below="@id/title"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_height="40dp"
                 android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
                 android:text="发布人：张川 课程：计算机网络"
                 android:textSize="20dp"
                 android:textStyle="normal"/>
@@ -54,9 +53,9 @@
                 android:id="@+id/time"
                 android:layout_below="@id/tcName"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_height="40dp"
                 android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
                 android:text="发布时间："
                 android:textSize="20dp"/>
 

@@ -18,8 +18,7 @@
         android:layout_below="@id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
-        android:layout_marginBottom="60dp">
+        android:background="@color/white">
         <com.baoyz.swipemenulistview.SwipeMenuListView
             android:id="@+id/taskLsv"
             android:layout_width="match_parent"

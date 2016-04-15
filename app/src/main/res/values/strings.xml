@@ -21,6 +21,7 @@
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_task_manage">TaskManageActivity</string>
     <string name="title_activity_attend_manage">AttendManage</string>
+    <string name="title_activity_attend_detail">AttendDetailActivity</string>
 
 
 </resources>

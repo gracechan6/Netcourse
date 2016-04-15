@@ -39,6 +39,20 @@ public class DBOpenHelper extends SQLiteOpenHelper {
             + "EndTime varchar(20),"
             + "OpusNum integer ) ";
 
+    public final String CREATE_BOOK_AttendShow = "create table tbAttendShow("
+            + "AttdenceId integer primary key autoincrement ,"
+            + "AttdenceNum integer ,"
+            + "ActNum integer ,"
+            + "PlaceName varchar(20)  ,"
+            + "CourName varchar(50) ,"
+            + "TeachName varchar(20) ,"
+            + "AttdenceWeek varchar(20) ,"
+            + "StatusTime varchar(20) ,"
+            + "StaName varchar(20) ,"
+            + "Status varchar(10) ,"
+            + "AttdenceClass varchar(10),"
+            + "UpdateNum integer)";
+
     private Context context;
 
     public DBOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
@@ -51,6 +65,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_BOOK_ANNShow);
         db.execSQL(CREATE_BOOK_TaskShow);
         db.execSQL(CREATE_BOOK_TaskManageShow);
+        db.execSQL(CREATE_BOOK_AttendShow);
     }
 
     @Override

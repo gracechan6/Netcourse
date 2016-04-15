@@ -39,6 +39,10 @@
             android:name=".activity.AttendManageActivity"
             android:label="@string/title_activity_attend_manage" >
         </activity>
+        <activity
+            android:name=".activity.AttendDetailActivity"
+            android:label="@string/title_activity_attend_detail" >
+        </activity>
     </application>
 
 </manifest>

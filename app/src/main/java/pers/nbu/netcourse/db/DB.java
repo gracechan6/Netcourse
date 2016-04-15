@@ -10,6 +10,7 @@ import java.util.List;
 import pers.nbu.netcourse.BaseApplication;
 import pers.nbu.netcourse.config.SystemConfig;
 import pers.nbu.netcourse.entity.AnnEntity;
+import pers.nbu.netcourse.entity.AttendEntity;
 import pers.nbu.netcourse.entity.TaskEntity;
 import pers.nbu.netcourse.entity.TaskManageEntity;
 
@@ -38,6 +39,7 @@ public class DB {
     public static final String TABLE_ANNSHOW = "tbAnnShow";
     public static final String TABLE_TASKSHOW = "tbTaskShow";
     public static final String TABLE_TASKMANAGESHOW = "tbTaskManageShow";
+    public static final String TABLE_ATTENDSHOW = "tbAttendShow";
 
 
     /**
@@ -139,7 +141,7 @@ public class DB {
 //end Ann DB
 //start Task DB
     /**
-     * 将服务器端获取到的公告信息同步存储到本地数据
+     * 将服务器端获取到的任务展示信息同步存储到本地数据
      * @param tasks
      */
     public void saveTaskShow(List<TaskEntity> tasks){
@@ -188,7 +190,7 @@ public class DB {
 
 //start TaskManage DB
     /**
-     * 将服务器端获取到的公告信息同步存储到本地数据
+     * 将服务器端获取到的任务管理信息同步存储到本地数据
      * @param tasks
      */
     public void saveTaskManageShow(List<TaskManageEntity> tasks){
@@ -276,5 +278,128 @@ public class DB {
     }
 
 //end TaskManage DB
+
+//start Attend DB
+    /**
+     * 将服务器端获取到的出勤信息同步存储到本地数据
+     * @param attends    需要存储到本地的列表
+     */
+    public void saveAttend(List<AttendEntity> attends){
+
+        ContentValues values=null;
+        db.beginTransaction();
+        for (int i = 0; i < attends.size() ; i++) {
+            values=new ContentValues();
+            values.put(SystemConfig.ATTDENCENUM, attends.get(i).getAttdenceNum());
+            values.put(SystemConfig.ACTNUM, attends.get(i).getActNum());
+            values.put(SystemConfig.PLACENAME, attends.get(i).getPlaceName());
+            values.put(SystemConfig.COURNAME, attends.get(i).getCourName());
+            values.put(SystemConfig.TEACHNAME, attends.get(i).getTeachName());
+            values.put(SystemConfig.ATTDENCEWEEK, attends.get(i).getAttdenceWeek());
+            values.put(SystemConfig.STATUSTIME, attends.get(i).getStatusTime());
+            values.put(SystemConfig.STANAME, attends.get(i).getStaName());
+            values.put(SystemConfig.STATUS, attends.get(i).getStatus());
+            values.put(SystemConfig.ATTDENCECLASS, attends.get(i).getAttdenceClass());
+            values.put(SystemConfig.UPDATENUM, attends.get(i).getUpdateNum());
+            db.insert(TABLE_ATTENDSHOW, null, values);
+        }
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    /**
+     * 从本地数据库获取num条数据
+     * @param num 需要获取的条数
+     * @return
+     */
+    public ArrayList<AttendEntity> getAttend(int num){
+        ArrayList<AttendEntity> attends= new ArrayList<>();
+        Cursor cursor=db.rawQuery("select * from "+TABLE_ATTENDSHOW+" order by AttdenceId desc limit 0,"+num,null);
+        if (cursor.moveToFirst()){
+            do {
+                AttendEntity attend = new AttendEntity(
+                        cursor.getInt(cursor.getColumnIndex(SystemConfig.ATTDENCEID)),
+                        cursor.getInt(cursor.getColumnIndex(SystemConfig.ATTDENCENUM)),
+                        cursor.getInt(cursor.getColumnIndex(SystemConfig.ACTNUM)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.PLACENAME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.COURNAME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.TEACHNAME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.ATTDENCEWEEK)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.STATUSTIME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.STANAME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.STATUS)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.ATTDENCECLASS)),
+                        cursor.getInt(cursor.getColumnIndex(SystemConfig.UPDATENUM)));
+                attends.add(attend);
+            }while (cursor.moveToNext());
+        }
+        return attends;
+    }
+
+    /**
+     * @return 返回可以更新的出勤记录 去服务器比较
+     */
+    public ArrayList<AttendEntity> getNeedUpdateAttend(){
+        ArrayList<AttendEntity> attends= new ArrayList<>();
+        Cursor cursor=db.rawQuery("select * from "+TABLE_ATTENDSHOW+" where UpdateNum<>1000 and Status ='缺课'",null);
+        if (cursor.moveToFirst()){
+            do {
+                AttendEntity attend = new AttendEntity(
+                        cursor.getInt(cursor.getColumnIndex(SystemConfig.ATTDENCEID)),
+                        cursor.getInt(cursor.getColumnIndex(SystemConfig.ATTDENCENUM)),
+                        cursor.getInt(cursor.getColumnIndex(SystemConfig.ACTNUM)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.PLACENAME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.COURNAME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.TEACHNAME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.ATTDENCEWEEK)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.STATUSTIME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.STANAME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.STATUS)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.ATTDENCECLASS)),
+                        cursor.getInt(cursor.getColumnIndex(SystemConfig.UPDATENUM)));
+                attends.add(attend);
+            }while (cursor.moveToNext());
+        }
+        return attends;
+    }
+
+    /**
+     * 更新本地出勤记录
+     * @param id  出勤id
+     * @param staName 考勤状态
+     * @param status 状态
+     * @return 更新条数
+     */
+    public int updateAttend(int id,String staName,String status,int num){
+        ContentValues value=new ContentValues();
+        value.put(SystemConfig.STANAME,staName);
+        value.put(SystemConfig.STATUS,status);
+        value.put(SystemConfig.UPDATENUM,num);
+
+        String[] args = {String.valueOf(id)};
+        return db.update(TABLE_ATTENDSHOW, value, "AttdenceNum=?" ,args);
+    }
+
+    public AttendEntity getAttendByANum(int num){
+        Cursor cursor=db.rawQuery("select * from "+TABLE_ATTENDSHOW+" where AttdenceNum="+num,null);
+        if (cursor.moveToFirst()){
+            AttendEntity attend = new AttendEntity(
+                    cursor.getInt(cursor.getColumnIndex(SystemConfig.ATTDENCEID)),
+                    cursor.getInt(cursor.getColumnIndex(SystemConfig.ATTDENCENUM)),
+                    cursor.getInt(cursor.getColumnIndex(SystemConfig.ACTNUM)),
+                    cursor.getString(cursor.getColumnIndex(SystemConfig.PLACENAME)),
+                    cursor.getString(cursor.getColumnIndex(SystemConfig.COURNAME)),
+                    cursor.getString(cursor.getColumnIndex(SystemConfig.TEACHNAME)),
+                    cursor.getString(cursor.getColumnIndex(SystemConfig.ATTDENCEWEEK)),
+                    cursor.getString(cursor.getColumnIndex(SystemConfig.STATUSTIME)),
+                    cursor.getString(cursor.getColumnIndex(SystemConfig.STANAME)),
+                    cursor.getString(cursor.getColumnIndex(SystemConfig.STATUS)),
+                    cursor.getString(cursor.getColumnIndex(SystemConfig.ATTDENCECLASS)),
+                    cursor.getInt(cursor.getColumnIndex(SystemConfig.UPDATENUM)));
+            return attend;
+        }
+        return null;
+    }
+//end Attend DB
 
 }

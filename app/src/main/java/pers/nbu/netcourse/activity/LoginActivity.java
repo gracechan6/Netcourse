@@ -68,11 +68,17 @@ public class LoginActivity extends BaseActivity {
         }
         submit.setClickable(false);
 
+        if (!PreferenceUtils.getEqId(getApplicationContext()).equals("") &&
+                !PreferenceUtils.getEqId(getApplicationContext()).equals(names)) {
+            Toast.makeText(getApplicationContext(), "此设备已经登陆过相应学号，请使用第一次登陆的学号作为帐号登陆", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         AsyncHttpClient client=((BaseApplication)getApplication()).getSharedHttpClient();
         RequestParams requestParams = new RequestParams();
         requestParams.put(SystemConfig.LOGINNAME,names);
         requestParams.put(SystemConfig.LOGINPWD,pwds);
-        client.post(SystemConfig.URL_LOGINVAILD,requestParams,new JsonHttpResponseHandler(SystemConfig.SERVER_CHAR_SET){
+        client.post(SystemConfig.URL_LOGINVAILD, requestParams, new JsonHttpResponseHandler(SystemConfig.SERVER_CHAR_SET) {
             @Override
             public void onStart() {
                 dialog.show();

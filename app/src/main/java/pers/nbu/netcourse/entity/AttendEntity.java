@@ -15,11 +15,32 @@ public class AttendEntity {
     private String StaName;
     private String Status;
     private String AttdenceClass;
+    private int UpdateNum;
+
+    public int getAttdenceId() {
+        return AttdenceId;
+    }
+
+    public void setAttdenceId(int attdenceId) {
+        AttdenceId = attdenceId;
+    }
+
+    public int getUpdateNum() {
+        return UpdateNum;
+    }
+
+    public void setUpdateNum(int updateNum) {
+        UpdateNum = updateNum;
+    }
+
+    public AttendEntity(String status) {
+        Status = status;
+    }
 
     public AttendEntity(int attdenceId,int attdenceNum, int actNum, String placeName,
                         String courName, String teachName, String attdenceWeek,
                         String statusTime, String staName, String status,
-                        String attdenceClass) {
+                        String attdenceClass,int updateNum) {
         super();
         AttdenceId = attdenceId ;
         AttdenceNum = attdenceNum;
@@ -32,12 +53,13 @@ public class AttendEntity {
         StaName = staName;
         Status = status;
         AttdenceClass = attdenceClass;
+        UpdateNum = updateNum;
     }
 
     public AttendEntity(int attdenceNum, int actNum, String placeName,
                       String courName, String teachName, String attdenceWeek,
                       String statusTime, String staName, String status,
-                      String attdenceClass) {
+                      String attdenceClass,int updateNum) {
         super();
         AttdenceNum = attdenceNum;
         ActNum = actNum;
@@ -49,6 +71,7 @@ public class AttendEntity {
         StaName = staName;
         Status = status;
         AttdenceClass = attdenceClass;
+        UpdateNum = updateNum;
     }
     public int getAttdenceNum() {
         return AttdenceNum;
