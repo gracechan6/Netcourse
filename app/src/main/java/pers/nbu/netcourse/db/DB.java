@@ -88,7 +88,11 @@ public class DB {
     public int countData(String tableName){
         Cursor cursor=db.query(tableName,null,null,null,null,null,null);
 
-        return cursor.getCount();//?not sure
+        return cursor.getCount();
+    }
+
+    public int delData(String tableName){
+        return  db.delete(tableName, null, null);
     }
 //start Ann DB
     /**

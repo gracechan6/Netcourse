@@ -13,6 +13,13 @@
     <string name="name">用户名:</string>
     <string name="pwd">密&#8195;码:</string>
 
+    <string name="text_take_photo">拍照</string>
+    <string name="text_from_gallery">从相册中选取</string>
+    <string name="text_cancel">取消</string>
+    <string name="refuse_sdcard">当前SD卡不可用</string>
+    <string name="cancel">取消</string>
+    <string name="ok">确认</string>
+
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>

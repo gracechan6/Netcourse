@@ -2,10 +2,40 @@
 <project version="4">
   <component name="Encoding" native2AsciiForPropertiesFiles="true" defaultCharsetForPropertiesFiles="UTF-8">
     <file url="file://$PROJECT_DIR$/app/build.gradle" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/cropper/CropImageView.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/cropper/cropwindow/CropOverlayView.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/cropper/cropwindow/edge/Edge.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/cropper/cropwindow/edge/EdgePair.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/cropper/cropwindow/handle/CenterHandleHelper.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/cropper/cropwindow/handle/CornerHandleHelper.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/cropper/cropwindow/handle/Handle.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/cropper/cropwindow/handle/HandleHelper.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/cropper/cropwindow/handle/HorizontalHandleHelper.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/cropper/cropwindow/handle/VerticalHandleHelper.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/cropper/util/AspectRatioUtil.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/cropper/util/HandleUtil.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/cropper/util/ImageViewUtil.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/cropper/util/PaintUtil.java" charset="GBK" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/JsonTransform.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/activity/CropActivity.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/adapter/TaskAdapter.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/cropper/CropImageView.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/cropper/cropwindow/CropOverlayView.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/cropper/cropwindow/edge/Edge.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/cropper/cropwindow/edge/Edge.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/cropper/cropwindow/edge/EdgePair.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/cropper/cropwindow/handle/CenterHandleHelper.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/cropper/cropwindow/handle/CornerHandleHelper.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/cropper/cropwindow/handle/Handle.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/cropper/cropwindow/handle/HandleHelper.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/cropper/cropwindow/handle/HorizontalHandleHelper.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/cropper/cropwindow/handle/VerticalHandleHelper.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/cropper/util/AspectRatioUtil.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/cropper/util/HandleUtil.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/cropper/util/ImageViewUtil.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/cropper/util/PaintUtil.java" charset="GBK" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/util/PreferenceUtils.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/view/ActionSheet.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/view/ActionSheet.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/view/ChatDialog.java" charset="GBK" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/pers/nbu/netcourse/view/CircleImageView.java" charset="GBK" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/drawable-hdpi/icon_enter.png" charset="GBK" />
@@ -13,6 +43,8 @@
     <file url="file://$PROJECT_DIR$/app/src/main/res/drawable/btn_corner20_click.xml" charset="GBK" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/drawable/btn_corner20_unclick.xml" charset="GBK" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/drawable/me_tv_selector.xml" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_crop.xml" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/crop_image_view.xml" charset="GBK" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/values/actionsheet__attrs.xml" charset="GBK" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/values/actionsheet__theme.xml" charset="GBK" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/values/attrs.xml" charset="GBK" />

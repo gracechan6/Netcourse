@@ -47,6 +47,16 @@ public class PreferenceUtils {
         return sp.getString(PREFERENCE_USERNAME,"");
     }
 
+    public static String getClassName(Context context){
+        SharedPreferences sp=context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE);
+        return sp.getString(PREFERENCE_CLASS,"");
+    }
+
+    public static String getRegDate(Context context){
+        SharedPreferences sp=context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE);
+        return sp.getString(PREFERENCE_REGDATE,"");
+    }
+
     public static String getEqId(Context context){
         SharedPreferences sp=context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE);
         return sp.getString(PREFERENCE_EQID,"");

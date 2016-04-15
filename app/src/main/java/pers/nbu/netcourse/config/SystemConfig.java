@@ -1,5 +1,7 @@
 package pers.nbu.netcourse.config;
 
+import android.os.Environment;
+
 /**
  * Created by gracechan on 2015/11/23.
  */
@@ -8,7 +10,7 @@ public class SystemConfig {
     public static final String SERVER_CHAR_SET="UTF-8";
 
     //=======================URL config
-    public static final String SERVER_IP = "10.22.152.114";//10.0.2.2本地 192.168.1.119/10.45.60.54、192.168.1.182
+    public static final String SERVER_IP = "192.168.137.1";//10.0.2.2本地 10.22.152.114/10.45.60.54、192.168.1.182
     public static final String SERVER_PORT = "8080";
     public static final String URL_BASE = "http://" + SERVER_IP + ":" + SERVER_PORT;
     public static final String URL_ALLANN = URL_BASE + "/netcourse/getAllAnnounInfo.action";
@@ -63,5 +65,9 @@ public class SystemConfig {
     public static final String STATUS="Status";
     public static final String ATTDENCECLASS="AttdenceClass";
     public static final String UPDATENUM="UpdateNum";
+
+    //本地头像保存的路径
+    public static final String PATH_HEAD= Environment.getExternalStorageDirectory()+"/VClassHead/";
+    public static final String HEAD_TYPE= ".png";
 
 }

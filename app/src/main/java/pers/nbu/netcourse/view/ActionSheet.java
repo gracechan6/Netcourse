@@ -30,7 +30,7 @@ import pers.nbu.netcourse.R;
 
 public class ActionSheet extends Dialog implements OnClickListener
 {
-	/* ¿Ø¼şµÄid */
+	/* æ§ä»¶çš„id */
 	private static final int CANCEL_BUTTON_ID = 100;
 	private static final int BG_VIEW_ID = 10;
 	private static final int TRANSLATE_DURATION = 300;
@@ -50,18 +50,18 @@ public class ActionSheet extends Dialog implements OnClickListener
 
 	public ActionSheet(Context context)
 	{
-		super(context, android.R.style.Theme_Light_NoTitleBar);// È«ÆÁ
+		super(context, android.R.style.Theme_Light_NoTitleBar);// å…¨å±
 		this.mContext = context;
 		initViews();
 		getWindow().setGravity(Gravity.BOTTOM);
 		Drawable drawable = new ColorDrawable();
-		drawable.setAlpha(0);// È¥³ıºÚÉ«±³¾°
+		drawable.setAlpha(0);// å»é™¤é»‘è‰²èƒŒæ™¯
 		getWindow().setBackgroundDrawable(drawable);
 	}
 
 	public void initViews()
 	{
-		/* Òş²ØÈí¼üÅÌ */
+		/* éšè—è½¯é”®ç›˜ */
 		InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
 		if (imm.isActive())
 		{
@@ -69,7 +69,7 @@ public class ActionSheet extends Dialog implements OnClickListener
 			if (focusView != null)
 				imm.hideSoftInputFromWindow(focusView.getWindowToken(), 0);
 		}
-		mAttrs = readAttribute();// »ñÈ¡Ö÷ÌâÊôĞÔ
+		mAttrs = readAttribute();// è·å–ä¸»é¢˜å±æ€§
 		mView = createView();
 		mBg.startAnimation(createAlphaInAnimation());
 		mPanel.startAnimation(createTranslationInAnimation());
@@ -108,7 +108,7 @@ public class ActionSheet extends Dialog implements OnClickListener
 	}
 
 	/**
-	 * ´´½¨»ù±¾µÄ±³¾°ÊÓÍ¼
+	 * åˆ›å»ºåŸºæœ¬çš„èƒŒæ™¯è§†å›¾
 	 */
 	private View createView()
 	{
@@ -135,7 +135,7 @@ public class ActionSheet extends Dialog implements OnClickListener
 	}
 
 	/**
-	 * ´´½¨MenuItem
+	 * åˆ›å»ºMenuItem
 	 */
 	private void createItems()
 	{
@@ -181,7 +181,7 @@ public class ActionSheet extends Dialog implements OnClickListener
 	}
 
 	/**
-	 * item°´Å¥µÄÑÕÉ«
+	 * itemæŒ‰é’®çš„é¢œè‰²
 	 *
 	 * @param titles
 	 * @param i
@@ -220,7 +220,7 @@ public class ActionSheet extends Dialog implements OnClickListener
 	}
 
 	/**
-	 * dissmiss Menu²Ëµ¥
+	 * dissmiss Menuèœå•
 	 */
 	public void dismissMenu()
 	{
@@ -232,7 +232,7 @@ public class ActionSheet extends Dialog implements OnClickListener
 	}
 
 	/**
-	 * dismissÊ±µÄ´¦Àí
+	 * dismissæ—¶çš„å¤„ç†
 	 */
 	private void onDismiss()
 	{
@@ -241,7 +241,7 @@ public class ActionSheet extends Dialog implements OnClickListener
 	}
 
 	/**
-	 * È¡Ïû°´Å¥µÄ±êÌâÎÄ×Ö
+	 * å–æ¶ˆæŒ‰é’®çš„æ ‡é¢˜æ–‡å­—
 	 *
 	 * @param title
 	 * @return
@@ -253,7 +253,7 @@ public class ActionSheet extends Dialog implements OnClickListener
 	}
 
 	/**
-	 * È¡Ïû°´Å¥µÄ±êÌâÎÄ×Ö
+	 * å–æ¶ˆæŒ‰é’®çš„æ ‡é¢˜æ–‡å­—
 	 *
 	 * @param strId
 	 * @return
@@ -264,7 +264,7 @@ public class ActionSheet extends Dialog implements OnClickListener
 	}
 
 	/**
-	 * µã»÷Íâ²¿±ßÔµÊÇ·ñ¿ÉÈ¡Ïû
+	 * ç‚¹å‡»å¤–éƒ¨è¾¹ç¼˜æ˜¯å¦å¯å–æ¶ˆ
 	 *
 	 * @param cancelable
 	 * @return
@@ -347,10 +347,10 @@ public class ActionSheet extends Dialog implements OnClickListener
 	}
 
 	/**
-	 * ×Ô¶¨ÒåÊôĞÔµÄ¿Ø¼şÖ÷Ìâ
+	 * è‡ªå®šä¹‰å±æ€§çš„æ§ä»¶ä¸»é¢˜
 	 *
 	 * @author Mr.Zheng
-	 * @date 2014Äê9ÔÂ7ÈÕ ÏÂÎç10:47:06
+	 * @date 2014å¹´9æœˆ7æ—¥ ä¸‹åˆ10:47:06
 	 */
 	private class Attributes
 	{

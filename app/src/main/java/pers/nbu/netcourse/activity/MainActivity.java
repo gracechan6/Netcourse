@@ -3,6 +3,9 @@ package pers.nbu.netcourse.activity;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -22,6 +25,7 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,10 +42,12 @@ import pers.nbu.netcourse.entity.TaskEntity;
 import pers.nbu.netcourse.fragment.BottomFragment;
 import pers.nbu.netcourse.util.LogUtil;
 import pers.nbu.netcourse.util.PreferenceUtils;
+import pers.nbu.netcourse.view.ActionSheet;
+import pers.nbu.netcourse.view.CircleImageView;
 import pers.nbu.netcourse.view.ListViewForScrollView;
 
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements ActionSheet.MenuItemClickListener{
 
     /*公告任务栏目需要用到的控件及数据定义*/
     private SwipeRefreshLayout srlayout,taskLayout;
@@ -57,6 +63,14 @@ public class MainActivity extends BaseActivity {
 
     /*更多*/
     private LinearLayout more,me;
+
+    /*我*/
+    private CircleImageView ivHead;//头像显示
+    private TextView className,regDate,name;
+    public static int CROP_REQUEST_CODE = 10001;
+    public static int Setting = 10002;
+    public static final String PHOTO_TYPE = "PHOTO_TYPE";
+    private String headPath;
 
     //底部导航栏
     private BottomFragment bottomFragment;
@@ -120,6 +134,11 @@ public class MainActivity extends BaseActivity {
         more = (LinearLayout) findViewById(R.id.more);
         //me
         me = (LinearLayout) findViewById(R.id.me);
+        ivHead= (CircleImageView) findViewById(R.id.civ_head);
+        headPath=SystemConfig.PATH_HEAD+ PreferenceUtils.getUserId(getApplication())+SystemConfig.HEAD_TYPE;
+        className = (TextView) findViewById(R.id.className);
+        regDate = (TextView) findViewById(R.id.regDate);
+        name = (TextView) findViewById(R.id.name);
     }
 
     //点击
@@ -182,7 +201,7 @@ public class MainActivity extends BaseActivity {
                     else showLogin(4);
                     break;
                 case R.id.me:
-                    if (PreferenceUtils.getLOGINVAL()) {showView(5);setTitle("我");}
+                    if (PreferenceUtils.getLOGINVAL()) {showView(5);setTitle("我");initMe();}
                     else showLogin(5);
                     break;
                 default:
@@ -230,6 +249,11 @@ public class MainActivity extends BaseActivity {
             default:break;
         }
     }
+
+    /**
+     * @param flag 代表首页1
+     * @param num 显示条数
+     */
 //首页========start
     protected void init(int flag,int num){
         initAnn(flag, num);
@@ -363,10 +387,10 @@ public class MainActivity extends BaseActivity {
         ArrayList<TaskEntity> arrayList = db.getTaskShow(1);
         if (arrayList != null && arrayList.size()>0) {
             LogUtil.d("test", String.valueOf(arrayList.get(0).getTaskNum()));
-            getTask(1, arrayList.get(0).getTaskNum(),taskShowNum,3);
+            getTask(1, arrayList.get(0).getTaskNum(),num,flag);
         }
         else
-            getTask(1, 0,taskShowNum,3);
+            getTask(1, 0,num,flag);
     }
 
     /**
@@ -478,7 +502,16 @@ public class MainActivity extends BaseActivity {
                 LogUtil.i("test", "我  返回");
                 showView(5);
                 setTitle("我");
+                initMe();
             }
+        }
+
+        if (requestCode==CROP_REQUEST_CODE && resultCode== Activity.RESULT_OK){
+            /*
+            * 头像成功了
+            * */
+            //Bitmap bitmap=data.getExtras().getParcelable(CropActivity.BITMAP_DATA);
+            setHead();
         }
 
     }
@@ -503,25 +536,103 @@ public class MainActivity extends BaseActivity {
 
 //更多========end
 
+    /**
+     * @param view 更改头像  actionSheet显示
+     */
 //我========start
     public void showActionSheet(View view){
         LogUtil.i("test","showAtionSheet");
+        setTheme(R.style.ActionSheetStyleIOS7);
+        ActionSheet menuView = new ActionSheet(this);
+        menuView.setCancelButtonTitle(getResources().getString(R.string.text_cancel));// before add items
+        menuView.addItems(getResources().getString(R.string.text_take_photo),
+                getResources().getString(R.string.text_from_gallery));
+        menuView.setItemClickListener(this);
+        menuView.setCancelableOnTouchMenuOutside(true);
+        menuView.showMenu();
+    }
+
+    /**
+     * 弹框再次提醒
+     * @param name 表名
+     */
+    protected void warnAgain(final String name){
+
+        AlertDialog.Builder builder  = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("删除") ;
+        builder.setMessage("您确认删除吗？") ;
+        builder.setPositiveButton("取消", null);
+        builder.setNegativeButton("确认", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                int re=db.delData(name);
+                LogUtil.i("test", name+"删除了数据总条数："+re);
+            }
+        });
+        builder.show();
     }
 
     public void doClearAnnData(View view){
-        LogUtil.i("test","doClearAnnData");
+        LogUtil.i("test", "doClearAnnData");
+
+        warnAgain(db.TABLE_ANNSHOW);
     }
 
     public void doClearTaskData(View view){
-        LogUtil.i("test","doClearTaskData");
+        LogUtil.i("test", "doClearTaskData");
+        warnAgain(db.TABLE_TASKSHOW);
     }
 
     public void doClearTaskMData(View view){
-        LogUtil.i("test","doClearTaskMData");
+        LogUtil.i("test", "doClearTaskMData");
+        warnAgain(db.TABLE_TASKMANAGESHOW);
     }
 
     public void doClearAttendData(View view){
         LogUtil.i("test","doClearAttendData");
+        warnAgain(db.TABLE_ATTENDSHOW);
+    }
+
+    /**
+     * @param itemPosition 三个选项选择其一操作
+     */
+    @Override
+    public void onItemClick(int itemPosition) {
+        switch (itemPosition){
+            case 0://调用相机拍照
+            case 1://从相册里面取照片
+                changePhoto(itemPosition);
+                break;
+            default:break;
+        }
+    }
+
+    /**
+     * 修改头像
+     * @param index 0 - 拍照， 1 - 相册
+     */
+    public void changePhoto(int index) {
+        Intent intent = new Intent(this, CropActivity.class);
+        intent.putExtra(PHOTO_TYPE, index);
+        startActivityForResult(intent, CROP_REQUEST_CODE);
+    }
+
+    /**
+     * 头像显示
+     */
+    public  void setHead(){
+        File file=new File(headPath);
+        if(file.exists()){
+            Bitmap bm= BitmapFactory.decodeFile(headPath);
+            ivHead.setImageDrawable(new BitmapDrawable(bm));
+        }
+    }
+
+    protected void initMe(){
+        setHead();
+        className.setText("班级：" + PreferenceUtils.getClassName(getApplicationContext()));
+        regDate.setText("注册日期：" + PreferenceUtils.getRegDate(getApplicationContext()));
+        name.setText(PreferenceUtils.getUserName(getApplicationContext()));
     }
 
 //我========end
