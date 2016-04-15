@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import pers.nbu.netcourse.db.DB;
 import pers.nbu.netcourse.entity.AnnEntity;
 import pers.nbu.netcourse.entity.TaskEntity;
+import pers.nbu.netcourse.entity.TaskManageEntity;
 
 /**
  * Created by GraceChan on 2016/4/6.
@@ -81,7 +82,7 @@ public class JsonTransform {
     }
 
     /**
-     * 将获取到的json格式公告信息转换成任务阅读格式
+     * 将获取到的json格式任务信息转换成任务阅读格式
      * @param jsonObject
      * @return
      */
@@ -110,6 +111,43 @@ public class JsonTransform {
         }
         if (lists.size() > 0) {
             db.saveTaskShow(lists);
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * 将获取到的json格式任务上交情况信息转换成任务上交情况阅读格式
+     * @param jsonObject
+     * @return
+     */
+    public Boolean turnToTaskMLists(JSONObject jsonObject) {
+        ArrayList<TaskManageEntity> lists = new ArrayList<>();
+
+        //解析获取到的json数据串（所有公告信息）
+        try {
+            JSONArray jsonArray = jsonObject.getJSONArray("returnData");
+            JSONObject jobj;
+            TaskManageEntity entity;
+            for (int i = 0; i < jsonArray.length(); i++) {
+                jobj = jsonArray.getJSONObject(i);
+                entity = new TaskManageEntity(jobj.getInt("taskNum"),
+                        jobj.getInt("treeid"),
+                        jobj.getString("teachName"),
+                        jobj.getString("taskTitle"),
+                        jobj.getString("courName"),
+                        jobj.getString("taskTime"),
+                        jobj.getString("endTime"),
+                        jobj.getInt("opusNum")
+                );
+                lists.add(entity);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (lists.size() > 0) {
+            db.saveTaskManageShow(lists);
             return true;
         }
         return false;

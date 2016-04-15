@@ -77,41 +77,39 @@ public class BaseActivity extends Activity {
 		mToolBar.addView(mTitle, lp);
 	}
 
+	public void doRefreshClick(){
+
+	}
+
 	/**
 	 * 设置导航栏左侧返回
-	 * @param s
-	 * @param icon
+	 * @param b 是否显示图标
 	 */
-	protected void setLeftOfToolbar(String s,Drawable icon){
+	protected void setLeftOfToolbar(Boolean b){
 		if (mLeft == null){
 			lp = new Toolbar.LayoutParams(Toolbar.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT);
 			lp.gravity = Gravity.LEFT;
 			mLeft = new TextView(this);
-			//drawable=getResources().getDrawable(R.drawable.ic_launcher_blue);
-			//drawable.setBounds(0, 0, 50, 50);
-			//mRight.setCompoundDrawables(drawable, null, null, null);
 			mLeft.setText("");
 			mLeft.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
 			mLeft.setTextColor(getResources().getColor(R.color.bottom_text_selected));
+			mLeft.setPadding(0, 0, 20, 0);
 			mLeft.setGravity(Gravity.CENTER);
-			mLeft.setPadding(10, 0, 0, 0);
 			mToolBar.addView(mLeft, lp);
 		}
-		if (s!=null)  mLeft.setText(s);
-		else  mLeft.setText("");
-		if (icon != null) {
-			drawable = icon;
-			drawable.setBounds(0, 0, 50, 50);
-			mLeft.setCompoundDrawables(drawable, null, null, null);
+		if (b){
+			Drawable img_back=getResources().getDrawable(R.drawable.refresh_icon_select);
+			img_back.setBounds(0, 0, img_back.getMinimumWidth(), img_back.getMinimumHeight());
+			mLeft.setCompoundDrawables(img_back, null, null, null);
+			mLeft.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					doRefreshClick();
+				}
+			});
 		}
 		else
 			mLeft.setCompoundDrawables(null, null, null, null);
-		mLeft.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
 	}
 
 	/**

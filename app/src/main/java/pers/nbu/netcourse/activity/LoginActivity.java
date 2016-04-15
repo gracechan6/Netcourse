@@ -1,5 +1,6 @@
 package pers.nbu.netcourse.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -36,13 +37,18 @@ public class LoginActivity extends BaseActivity {
         initView();
     }
 
+    @Override
+    public void finish() {
+        super.finish();
+    }
+
     protected void initView(){
         name = (EditText) findViewById(R.id.name);
         pwd = (EditText) findViewById(R.id.pwd);
         submit = (Button) findViewById(R.id.submit);
 
         SharedPreferences sp=getSharedPreferences(PreferenceUtils.PREFERENCE, Context.MODE_PRIVATE);
-        name.setText(sp.getString(PreferenceUtils.PREFERENCE_USERNAME, ""));
+        name.setText(sp.getString(PreferenceUtils.PREFERENCE_USERID, ""));
         pwd.setText(sp.getString(PreferenceUtils.PREFERENCE_PASSWORD, ""));
     }
 
@@ -76,10 +82,13 @@ public class LoginActivity extends BaseActivity {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
                     if (response.getBoolean("success")) {
-                        LogUtil.i("success", "登陆成功");
+                        LogUtil.i("test", "登陆成功");
                         PreferenceUtils.saveLoginInfo(getApplicationContext(), names, pwds);
                         PreferenceUtils.saveClassInfo(getApplicationContext(), response.getString(SystemConfig.USERNAME),
-                                                        response.getString(SystemConfig.USERCLASS),response.getString(SystemConfig.USERREGDATE));
+                                response.getString(SystemConfig.USERCLASS), response.getString(SystemConfig.USERREGDATE));
+                        PreferenceUtils.setLOGINVAL(true);
+                        setResult(Activity.RESULT_OK);
+                        LoginActivity.this.finish();
                     } else {
                         Toast.makeText(getApplicationContext(), "用户不存在或者密码错误!", Toast.LENGTH_SHORT).show();
                     }
@@ -97,6 +106,7 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onFinish() {
                 dialog.dismiss();
+                submit.setClickable(true);
             }
         });
 

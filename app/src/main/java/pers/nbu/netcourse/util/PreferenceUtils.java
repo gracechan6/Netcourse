@@ -9,10 +9,10 @@ import android.content.SharedPreferences;
 public class PreferenceUtils {
     public static final String PREFERENCE = "PREFERENCE";
 
-    //±£¥Ê”√ªß’À∫≈
+    //‰øùÂ≠òÁî®Êà∑Ë¥¶Âè∑
     public static final String PREFERENCE_USERNAME = "PREFERENCE_USERNAME";
     public static final String PREFERENCE_USERID = "PREFERENCE_USERID";
-    //±£¥Ê√‹¬Î
+    //‰øùÂ≠òÂØÜÁ†Å
     public static final String PREFERENCE_PASSWORD = "PREFERENCE_PASSWORD";
 
     public static final String PREFERENCE_CLASS = "PREFERENCE_CLASS";
@@ -41,6 +41,11 @@ public class PreferenceUtils {
     public static String getUserName(Context context){
         SharedPreferences sp=context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE);
         return sp.getString(PREFERENCE_USERNAME,"");
+    }
+
+    public static String getUserId(Context context){
+        SharedPreferences sp=context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE);
+        return sp.getString(PREFERENCE_USERID,"");
     }
 
     public static Boolean getLOGINVAL() {

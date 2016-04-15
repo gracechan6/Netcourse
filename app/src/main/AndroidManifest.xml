@@ -31,6 +31,14 @@
             android:name=".activity.LoginActivity"
             android:label="@string/title_activity_login" >
         </activity>
+        <activity
+            android:name=".activity.TaskManageActivity"
+            android:label="@string/title_activity_task_manage" >
+        </activity>
+        <activity
+            android:name=".activity.AttendManageActivity"
+            android:label="@string/title_activity_attend_manage" >
+        </activity>
     </application>
 
 </manifest>

@@ -11,6 +11,7 @@ import pers.nbu.netcourse.BaseApplication;
 import pers.nbu.netcourse.config.SystemConfig;
 import pers.nbu.netcourse.entity.AnnEntity;
 import pers.nbu.netcourse.entity.TaskEntity;
+import pers.nbu.netcourse.entity.TaskManageEntity;
 
 /**
  * Created by GraceChan on 2015/10/12.
@@ -36,6 +37,7 @@ public class DB {
      */
     public static final String TABLE_ANNSHOW = "tbAnnShow";
     public static final String TABLE_TASKSHOW = "tbTaskShow";
+    public static final String TABLE_TASKMANAGESHOW = "tbTaskManageShow";
 
 
     /**
@@ -77,7 +79,6 @@ public class DB {
         return annnum;
     }
 
-//start Ann DB
     /**
      * 表中数据总条数
      * @param tableName
@@ -87,7 +88,7 @@ public class DB {
 
         return cursor.getCount();//?not sure
     }
-
+//start Ann DB
     /**
      * 将服务器端获取到的公告信息同步存储到本地数据
      * @param anns
@@ -183,7 +184,97 @@ public class DB {
         }
         return tasks;
     }
-//end Ann DB
+//end Task DB
 
+//start TaskManage DB
+    /**
+     * 将服务器端获取到的公告信息同步存储到本地数据
+     * @param tasks
+     */
+    public void saveTaskManageShow(List<TaskManageEntity> tasks){
+
+        ContentValues values=null;
+        db.beginTransaction();
+        for (int i = 0; i < tasks.size() ; i++) {
+            values=new ContentValues();
+            values.put(SystemConfig.TASKNUM, tasks.get(i).getTaskNum());
+            values.put(SystemConfig.TREEID, tasks.get(i).getTreeid());
+            values.put(SystemConfig.TEACHNAME, tasks.get(i).getTeachName());
+            values.put(SystemConfig.TASKTITLE, tasks.get(i).getTaskTitle());
+            values.put(SystemConfig.COURNAME, tasks.get(i).getCourName());
+            values.put(SystemConfig.TASKTIME, tasks.get(i).getTaskTime());
+            values.put(SystemConfig.ENDTIME, tasks.get(i).getEndTime());
+            values.put(SystemConfig.OPUSNUM, tasks.get(i).getOpusNum());
+            db.insert(TABLE_TASKMANAGESHOW, null, values);
+        }
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    /**
+     * 从本地数据库获取num条数据
+     * @param num
+     * @return
+     */
+    public ArrayList<TaskManageEntity> getTaskManageShow(int num){
+        ArrayList<TaskManageEntity> tasks= new ArrayList<>();
+        Cursor cursor=db.rawQuery("select * from "+TABLE_TASKMANAGESHOW+" order by TaskId desc limit 0,"+num,null);
+        if (cursor.moveToFirst()){
+            do {
+                TaskManageEntity task = new TaskManageEntity(cursor.getInt(cursor.getColumnIndex(SystemConfig.TASKID)),
+                        cursor.getInt(cursor.getColumnIndex(SystemConfig.TASKNUM)),
+                        cursor.getInt(cursor.getColumnIndex(SystemConfig.TREEID)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.TEACHNAME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.TASKTITLE)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.COURNAME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.TASKTIME)),
+                        cursor.getString(cursor.getColumnIndex(SystemConfig.ENDTIME)),
+                        cursor.getInt(cursor.getColumnIndex(SystemConfig.OPUSNUM)));
+                tasks.add(task);
+            }while (cursor.moveToNext());
+        }
+        return tasks;
+    }
+
+    /**
+     * 从本地数据库数据
+     * @param b    以此来区分是要取已交的部分还是未交的部分
+     * @return
+     */
+    public ArrayList<TaskManageEntity> getTaskManageShowOver(Boolean b){
+        ArrayList<TaskManageEntity> tasks= new ArrayList<>();
+        String sql;
+        if (b){
+            sql="select TaskNum,TaskId,OpusNum from "+TABLE_TASKMANAGESHOW+" where OpusNum>0 order by TaskId";
+        }else{
+            sql="select TaskNum,TaskId,OpusNum from "+TABLE_TASKMANAGESHOW+" where OpusNum=0 order by TaskId";
+        }
+        Cursor cursor=db.rawQuery(sql,null);
+        if (cursor.moveToFirst()){
+            do {
+                TaskManageEntity task = new TaskManageEntity(cursor.getInt(cursor.getColumnIndex(SystemConfig.TASKID)),
+                        cursor.getInt(cursor.getColumnIndex(SystemConfig.TASKNUM)));
+                tasks.add(task);
+            }while (cursor.moveToNext());
+        }
+        return tasks;
+    }
+
+    /**
+     * 从本地数据库数据
+     * @param id     taskId
+     * @param num   OptNum
+     * @return
+     */
+    public int updateTaskManageShowOver(int id,int num){
+
+        ContentValues value=new ContentValues();
+        value.put(SystemConfig.OPUSNUM,num);
+
+        String[] args = {String.valueOf(id)};
+        return db.update(TABLE_TASKMANAGESHOW, value, "TaskNum=?" ,args);
+    }
+
+//end TaskManage DB
 
 }

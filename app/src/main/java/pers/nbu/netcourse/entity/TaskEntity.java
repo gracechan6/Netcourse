@@ -13,6 +13,10 @@ public class TaskEntity {
     private String EndTime;
     private String TaskRequire;
 
+    public TaskEntity(String taskTitle){
+        TaskTitle = taskTitle;
+    }
+
     public TaskEntity(Integer taskNum, String taskTitle, String courName, String teachName, String taskTime, String endTime,String taskRequire) {
         TaskNum = taskNum;
         TaskTitle = taskTitle;

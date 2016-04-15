@@ -1,5 +1,6 @@
 package pers.nbu.netcourse.activity;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,7 +9,6 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -50,6 +50,9 @@ public class MainActivity extends BaseActivity {
     private TaskAdapter taskAdapter,taskShowAdapter;
     private List<AnnEntity> annLists;
     private List<TaskEntity> taskLists;
+
+    //加载更多
+    private TextView footer;
     /*首页*/
     private ScrollView index;
     private ListViewForScrollView annShowLsv,taskShowLsv;
@@ -64,7 +67,7 @@ public class MainActivity extends BaseActivity {
     private DB db=DB.getInstance();
     private JsonTransform jsonTransform=JsonTransform.getInstance();
 
-    private static int showNum=10,taskShowNum=10;
+    private static int showNum=8,taskShowNum=8;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +88,7 @@ public class MainActivity extends BaseActivity {
      * 初始化控件
      */
     protected void initView(){
+        footer= (TextView) getLayoutInflater().inflate(R.layout.listview_foot,null);
         annLists = new ArrayList<>();
         taskLists = new ArrayList<>();
 
@@ -124,16 +128,25 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
             if(adapterView.getId()==annLsv.getId() || adapterView.getId()== annShowLsv.getId() ){
-                Intent intent = new Intent(getApplicationContext(),AnnActivity.class);
-                intent.putExtra(SystemConfig.ANNTITLE,annLists.get(position).getAnnTitle());
-                intent.putExtra(SystemConfig.ANNCON,annLists.get(position).getAnnCon());
-                intent.putExtra(SystemConfig.ANNTIME,annLists.get(position).getAnnTime());
-                intent.putExtra(SystemConfig.ANNURL,annLists.get(position).getAnnUrl());
-                intent.putExtra(SystemConfig.TEACHNAME,annLists.get(position).getTeachName());
-                intent.putExtra(SystemConfig.COURNAME,annLists.get(position).getCourName());
-                intent.putExtra(SystemConfig.ANNNUM,annLists.get(position).getAnnNum());
-                startActivity(intent);
+                if (position+1==annLists.size()){
+                    showNum +=7;
+                    getAnnFromDB(2,showNum);
+                }else {
+                    Intent intent = new Intent(getApplicationContext(), AnnActivity.class);
+                    intent.putExtra(SystemConfig.ANNTITLE, annLists.get(position).getAnnTitle());
+                    intent.putExtra(SystemConfig.ANNCON, annLists.get(position).getAnnCon());
+                    intent.putExtra(SystemConfig.ANNTIME, annLists.get(position).getAnnTime());
+                    intent.putExtra(SystemConfig.ANNURL, annLists.get(position).getAnnUrl());
+                    intent.putExtra(SystemConfig.TEACHNAME, annLists.get(position).getTeachName());
+                    intent.putExtra(SystemConfig.COURNAME, annLists.get(position).getCourName());
+                    intent.putExtra(SystemConfig.ANNNUM, annLists.get(position).getAnnNum());
+                    startActivity(intent);
+                }
             }else if (adapterView.getId()==taskLsv.getId() || adapterView.getId()==taskShowLsv.getId()){
+                if (position+1==taskLists.size()) {
+                    taskShowNum+=7;
+                    getTaskFromDB(3,taskShowNum);
+                }
                 Intent intent = new Intent(getApplicationContext(),TaskShowActivity.class);
                 intent.putExtra(SystemConfig.TASKTITLE, taskLists.get(position).getTaskTitle());
                 intent.putExtra(SystemConfig.TASKREQUIRE,taskLists.get(position).getTaskRequire());
@@ -142,6 +155,7 @@ public class MainActivity extends BaseActivity {
                 intent.putExtra(SystemConfig.TEACHNAME,taskLists.get(position).getTeachName());
                 intent.putExtra(SystemConfig.COURNAME,taskLists.get(position).getCourName());
                 intent.putExtra(SystemConfig.TASKNUM,taskLists.get(position).getTaskNum());
+                intent.putExtra("flag","1");//代表此activity传入
                 startActivity(intent);
             }
         }
@@ -255,6 +269,7 @@ public class MainActivity extends BaseActivity {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+
                         LogUtil.e(getClass().getSimpleName(), "刷新失败！");
                         Toast.makeText(getApplicationContext(), "刷新失败！", Toast.LENGTH_SHORT).show();
                     }
@@ -271,15 +286,22 @@ public class MainActivity extends BaseActivity {
 
     /**
      * 更新本地公告显示数据
+     * @param flag   区分 是首页 1 显示还是公告栏 2显示
+     * @param show
      */
     protected void getAnnFromDB(int flag,int show){
         annLists.clear();
         annLists.addAll(db.getAnnInfo(show));
+        if (annLists.size()>= 8 && annLists.size()<db.countData(db.TABLE_ANNSHOW)) {
+            annLists.add(new AnnEntity("LOADINGMORE","..."));
+        }
         if (flag==1) annShowAdapter.notifyDataSetChanged();
         else annAdapter.notifyDataSetChanged();
     }
     /**
      * 初始化公告信息
+     * @param flag 区分首页显示还是公告栏显示
+     * @param num 显示条数
      */
     protected void initAnn(int flag,int num){
         final int flags=flag,nums=num;
@@ -314,7 +336,7 @@ public class MainActivity extends BaseActivity {
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    LogUtil.e(getClass().getSimpleName(), "连接失败！");
+                    LogUtil.e("test", "连接失败！"+throwable.toString());
                     Toast.makeText(getApplicationContext(), "连接失败", Toast.LENGTH_SHORT).show();
                 }
 
@@ -330,10 +352,15 @@ public class MainActivity extends BaseActivity {
 //任务========start
     /**
      * 更新本地任务显示数据
+     * @param flag  区分 是首页1显示还是任务栏3显示
+     * @param show 显示数量
      */
     protected void getTaskFromDB(int flag,int show){
         taskLists.clear();
         taskLists.addAll(db.getTaskShow(show));
+        if (taskLists.size()>= 8 && taskLists.size()<db.countData(db.TABLE_TASKSHOW)) {
+            taskLists.add(new TaskEntity("LOADINGMORE"));
+        }
         if (flag==1) taskShowAdapter.notifyDataSetChanged();
         else taskAdapter.notifyDataSetChanged();
     }
@@ -440,10 +467,33 @@ public class MainActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
         if (requestCode==4){
-            LogUtil.i("test","更多返回");
+            if(resultCode == Activity.RESULT_OK) {
+                LogUtil.i("test", "更多返回");
+                showView(4);setTitle("更多");
+            }
         }else if (requestCode==5){
             LogUtil.i("test","我  返回");
         }
 
     }
+
+//更多========start
+
+    /**
+     * 任务管理
+     * @param view
+     */
+    public void doTaskManage(View view){
+        startActivity(new Intent(getApplicationContext(),TaskManageActivity.class));
+    }
+
+    /**
+     * 出勤管理
+     * @param view
+     */
+    public void doAttendManage(View view){
+        startActivity(new Intent(getApplicationContext(),AttendManageActivity.class));
+    }
+
+//更多========end
 }

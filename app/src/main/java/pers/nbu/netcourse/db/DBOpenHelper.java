@@ -28,6 +28,17 @@ public class DBOpenHelper extends SQLiteOpenHelper {
             + "TaskTime varchar(20) ,"
             + "EndTime varchar(20))";
 
+    public final String CREATE_BOOK_TaskManageShow = "create table tbTaskManageShow("
+            + "TaskId integer primary key autoincrement ,"
+            + "TaskNum integer ,"
+            + "Treeid integer ,"
+            + "TeachName varchar(20) ,"
+            + "TaskTitle varchar(100) ,"
+            + "CourName varchar(50) ,"
+            + "TaskTime varchar(20) ,"
+            + "EndTime varchar(20),"
+            + "OpusNum integer ) ";
+
     private Context context;
 
     public DBOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
@@ -39,6 +50,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_BOOK_ANNShow);
         db.execSQL(CREATE_BOOK_TaskShow);
+        db.execSQL(CREATE_BOOK_TaskManageShow);
     }
 
     @Override

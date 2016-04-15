@@ -19,6 +19,8 @@
     <string name="title_activity_ann">AnnActivity</string>
     <string name="title_activity_task_show">TaskShowActivity</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_task_manage">TaskManageActivity</string>
+    <string name="title_activity_attend_manage">AttendManage</string>
 
 
 </resources>

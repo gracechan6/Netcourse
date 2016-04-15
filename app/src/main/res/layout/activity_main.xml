@@ -132,6 +132,7 @@
             android:drawableRight="@drawable/icon_enter"
             android:drawablePadding="20dp"
             android:text="任务管理"
+            android:onClick="doTaskManage"
             android:textSize="20sp"
             android:textColor="@color/black"/>
 
@@ -152,6 +153,7 @@
             android:drawableRight="@drawable/icon_enter"
             android:drawablePadding="20dp"
             android:text="出勤管理"
+            android:onClick="doAttendManage"
             android:textSize="20sp"
             android:textColor="@color/black"/>
 

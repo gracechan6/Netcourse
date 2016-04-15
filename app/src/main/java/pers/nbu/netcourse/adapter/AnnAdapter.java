@@ -1,7 +1,9 @@
 package pers.nbu.netcourse.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.text.Html;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,9 +64,22 @@ public class AnnAdapter extends BaseAdapter{
             viewHolder = (ViewHolder) convertView.getTag();
 
         entity=infoEntityList.get(position);
-        viewHolder.title.setText(entity.getAnnTitle());
-        viewHolder.content.setText(Html.fromHtml(entity.getAnnCon()).toString());
-
+        if (entity.getAnnTitle().equals("LOADINGMORE")){
+            viewHolder.title.setText("加载更多");
+            Drawable img_back=context.getResources().getDrawable(R.drawable.icon_load);
+            img_back.setBounds(0, 0, img_back.getMinimumWidth(), img_back.getMinimumHeight());
+            viewHolder.title.setCompoundDrawables(img_back, null, null, null);
+            //viewHolder.title.setCompoundDrawablePadding(10);
+            viewHolder.title.setGravity(Gravity.CENTER);
+            viewHolder.content.setVisibility(View.GONE);
+        }
+        else {
+            viewHolder.title.setText(entity.getAnnTitle());
+            viewHolder.content.setText(Html.fromHtml(entity.getAnnCon()).toString());
+            viewHolder.content.setVisibility(View.VISIBLE);
+            viewHolder.title.setCompoundDrawables(null, null, null, null);
+            viewHolder.title.setGravity(Gravity.LEFT);
+        }
         return convertView;
     }
 }
