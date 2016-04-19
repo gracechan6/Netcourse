@@ -146,7 +146,7 @@ public class TaskManageActivity extends BaseActivity {
     protected AdapterView.OnItemClickListener taskClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            if (position+1==taskLists.size()){
+            if (position+1==taskLists.size() && taskLists.get(position).equals("LOADINGMORE")){
                 showNum +=7;
                 getTaskFromDB(showNum);
             }

@@ -130,6 +130,7 @@
             android:background="@drawable/more_tv_select"
             android:drawableLeft="@drawable/icon_task_manager"
             android:drawableRight="@drawable/icon_enter"
+            android:paddingRight="20dp"
             android:drawablePadding="20dp"
             android:text="任务管理"
             android:onClick="doTaskManage"
@@ -151,6 +152,7 @@
             android:background="@drawable/more_tv_select"
             android:drawableLeft="@drawable/icon_attendance_manager"
             android:drawableRight="@drawable/icon_enter"
+            android:paddingRight="20dp"
             android:drawablePadding="20dp"
             android:text="出勤管理"
             android:onClick="doAttendManage"
@@ -295,6 +297,15 @@
                 android:layout_marginLeft="10dp"/>
         </LinearLayout>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/blankView"
+        android:layout_below="@id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="60dp"
+        android:visibility="gone"/>
+
 <!--底部导航栏-->
     <fragment
         android:id="@+id/bottomFragment"

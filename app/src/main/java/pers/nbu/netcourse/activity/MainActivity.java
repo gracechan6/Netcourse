@@ -54,8 +54,8 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
     private SwipeMenuListView annLsv,taskLsv;
     private AnnAdapter annAdapter,annShowAdapter;
     private TaskAdapter taskAdapter,taskShowAdapter;
-    private List<AnnEntity> annLists;
-    private List<TaskEntity> taskLists;
+    private List<AnnEntity> annLists,annShowLists;
+    private List<TaskEntity> taskLists,taskShowLists;
 
     /*首页*/
     private ScrollView index;
@@ -76,10 +76,13 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
     private BottomFragment bottomFragment;
     private RadioGroup radioGroup;
 
+    private TextView blankView;
+
     private DB db=DB.getInstance();
     private JsonTransform jsonTransform=JsonTransform.getInstance();
 
     private static int showNum=8,taskShowNum=8;
+    private int loadsuccess;//首页选择的时候 dialog 控制
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,23 +95,28 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
         radioGroup.setOnCheckedChangeListener(checkedChangeListener);
 
         initToolBar();
-//        setTitle(getString(R.string.index));
 
+        //首页操作
+        showView(1);setTitle("高校云课堂");init(1, 3);
     }
 
     /**
      * 初始化控件
      */
     protected void initView(){
+        blankView = (TextView) findViewById(R.id.blankView);
+
         annLists = new ArrayList<>();
         taskLists = new ArrayList<>();
+        annShowLists = new ArrayList<>();
+        taskShowLists = new ArrayList<>();
 
         //index
         index = (ScrollView) findViewById(R.id.index);
         annShowLsv = (ListViewForScrollView) findViewById(R.id.annShowLsv);
         taskShowLsv = (ListViewForScrollView) findViewById(R.id.taskShowLsv);
-        annShowAdapter = new AnnAdapter(annLists,getApplicationContext());
-        taskShowAdapter = new TaskAdapter(taskLists,getApplicationContext());
+        annShowAdapter = new AnnAdapter(annShowLists,getApplicationContext());
+        taskShowAdapter = new TaskAdapter(taskShowLists,getApplicationContext());
         annShowLsv.setAdapter(annShowAdapter);
         taskShowLsv.setAdapter(taskShowAdapter);
         annShowLsv.setOnItemClickListener(annClickListener);
@@ -146,7 +154,7 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
             if(adapterView.getId()==annLsv.getId() || adapterView.getId()== annShowLsv.getId() ){
-                if (position+1==annLists.size()){
+                if (position+1==annLists.size() && annLists.get(position).getAnnTitle().equals("LOADINGMORE")){
                     showNum +=7;
                     getAnnFromDB(2,showNum);
                 }else {
@@ -161,7 +169,7 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
                     startActivity(intent);
                 }
             }else if (adapterView.getId()==taskLsv.getId() || adapterView.getId()==taskShowLsv.getId()){
-                if (position+1==taskLists.size()) {
+                if (position+1==taskLists.size() && taskLists.get(position).getTaskTitle().equals("LOADINGMORE")) {
                     taskShowNum+=7;
                     getTaskFromDB(3,taskShowNum);
                 }
@@ -197,11 +205,13 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
                     showView(3);setTitle("任务");initTask(3,taskShowNum);
                     break;
                 case R.id.more:
-                    if (PreferenceUtils.getLOGINVAL()) {showView(4);setTitle("更多");}
+                    setTitle("更多");
+                    if (PreferenceUtils.getLOGINVAL()) {showView(4);}
                     else showLogin(4);
                     break;
                 case R.id.me:
-                    if (PreferenceUtils.getLOGINVAL()) {showView(5);setTitle("我");initMe();}
+                    setTitle("我");
+                    if (PreferenceUtils.getLOGINVAL()) {showView(5);initMe();}
                     else showLogin(5);
                     break;
                 default:
@@ -221,32 +231,43 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
                     taskLayout.setVisibility(View.GONE);
                     more.setVisibility(View.GONE);
                     me.setVisibility(View.GONE);
+                    blankView.setVisibility(View.GONE);
                     break;
             case 2: index.setVisibility(View.GONE);
                     srlayout.setVisibility(View.VISIBLE);
                     taskLayout.setVisibility(View.GONE);
                     more.setVisibility(View.GONE);
                     me.setVisibility(View.GONE);
+                    blankView.setVisibility(View.GONE);
                     break;
             case 3: index.setVisibility(View.GONE);
                     srlayout.setVisibility(View.GONE);
                     taskLayout.setVisibility(View.VISIBLE);
                     more.setVisibility(View.GONE);
                     me.setVisibility(View.GONE);
+                    blankView.setVisibility(View.GONE);
                     break;
             case 4: index.setVisibility(View.GONE);
                     srlayout.setVisibility(View.GONE);
                     taskLayout.setVisibility(View.GONE);
                     more.setVisibility(View.VISIBLE);
                     me.setVisibility(View.GONE);
+                    blankView.setVisibility(View.GONE);
                     break;
             case 5: index.setVisibility(View.GONE);
                     srlayout.setVisibility(View.GONE);
                     taskLayout.setVisibility(View.GONE);
                     more.setVisibility(View.GONE);
                     me.setVisibility(View.VISIBLE);
+                    blankView.setVisibility(View.GONE);
                     break;
-            default:break;
+            default:index.setVisibility(View.GONE);
+                    srlayout.setVisibility(View.GONE);
+                    taskLayout.setVisibility(View.GONE);
+                    more.setVisibility(View.GONE);
+                    me.setVisibility(View.GONE);
+                    blankView.setVisibility(View.VISIBLE);
+                    break;
         }
     }
 
@@ -256,6 +277,7 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
      */
 //首页========start
     protected void init(int flag,int num){
+        dialog.show();
         initAnn(flag, num);
         initTask(flag, num);
     }
@@ -273,8 +295,8 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
             //是，则不操作,否，获取此id后的所有消息，然后保存到本地并更新进度
             ArrayList<AnnEntity> arrayList=db.getAnnInfo(1);
             if (arrayList!=null  && arrayList.size()>0) {
-                LogUtil.d("test", String.valueOf(arrayList.get(0).getAnnNum()));
-                getAnn(2, arrayList.get(0).getAnnNum(), showNum,2 );
+                LogUtil.d("test", "公告下拉刷新，获取到的最后一条公告id"+String.valueOf(arrayList.get(0).getAnnNum()));
+                getAnn(2, arrayList.get(0).getAnnNum(), showNum, 2);
             }
         }
     };
@@ -285,13 +307,19 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
      * @param show 显示数量
      */
     protected void getAnnFromDB(int flag,int show){
-        annLists.clear();
-        annLists.addAll(db.getAnnInfo(show));
-        if (annLists.size()>= 8 && annLists.size()<db.countData(db.TABLE_ANNSHOW)) {
-            annLists.add(new AnnEntity("LOADINGMORE","..."));
+        if (flag==1){
+            annShowLists.clear();
+            annShowLists.addAll(db.getAnnInfo(show));
+            annShowAdapter.notifyDataSetChanged();
         }
-        if (flag==1) annShowAdapter.notifyDataSetChanged();
-        else annAdapter.notifyDataSetChanged();
+        else {
+            annLists.clear();
+            annLists.addAll(db.getAnnInfo(show));
+            if (annLists.size() >= 8 && annLists.size() < db.countData(db.TABLE_ANNSHOW)) {
+                annLists.add(new AnnEntity("LOADINGMORE", "..."));
+            }
+            annAdapter.notifyDataSetChanged();
+        }
     }
     /**
      * 初始化公告信息
@@ -301,7 +329,7 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
     protected void initAnn(int flag,int num){
         ArrayList<AnnEntity> arrayList = db.getAnnInfo(1);
         if (arrayList != null && arrayList.size()>0) {
-            LogUtil.d("test", String.valueOf(arrayList.get(0).getAnnNum()));
+            LogUtil.d("test", "公告，获取到的最后一条公告id"+String.valueOf(arrayList.get(0).getAnnNum()));
             getAnn(1, arrayList.get(0).getAnnNum(), num, flag);
         }
         else
@@ -355,8 +383,13 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
 
             @Override
             public void onFinish() {
-                if (flag==1) dialog.dismiss();
-                else srlayout.setRefreshing(false);
+                if (flag==1 && flags!=1) dialog.dismiss();
+                if (flag!=1) srlayout.setRefreshing(false);
+                loadsuccess++;
+                if (loadsuccess == 2) {
+                    dialog.dismiss();
+                    loadsuccess=0;
+                }
             }
         });
     }
@@ -370,13 +403,19 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
      * @param show 显示数量
      */
     protected void getTaskFromDB(int flag,int show){
-        taskLists.clear();
-        taskLists.addAll(db.getTaskShow(show));
-        if (taskLists.size()>= 8 && taskLists.size()<db.countData(db.TABLE_TASKSHOW)) {
-            taskLists.add(new TaskEntity("LOADINGMORE"));
+        if (flag==1) {
+            taskShowLists.clear();
+            taskShowLists.addAll(db.getTaskShow(show));
+            taskShowAdapter.notifyDataSetChanged();
         }
-        if (flag==1) taskShowAdapter.notifyDataSetChanged();
-        else taskAdapter.notifyDataSetChanged();
+        else {
+            taskLists.clear();
+            taskLists.addAll(db.getTaskShow(show));
+            if (taskLists.size() >= 8 && taskLists.size() < db.countData(db.TABLE_TASKSHOW)) {
+                taskLists.add(new TaskEntity("LOADINGMORE"));
+            }
+            taskAdapter.notifyDataSetChanged();
+        }
     }
     /**
      * 初始化任务信息
@@ -386,7 +425,7 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
     protected void initTask(int flag,int num){
         ArrayList<TaskEntity> arrayList = db.getTaskShow(1);
         if (arrayList != null && arrayList.size()>0) {
-            LogUtil.d("test", String.valueOf(arrayList.get(0).getTaskNum()));
+            LogUtil.d("test","任务，获取到的最后一条任务id"+ String.valueOf(arrayList.get(0).getTaskNum()));
             getTask(1, arrayList.get(0).getTaskNum(),num,flag);
         }
         else
@@ -441,8 +480,13 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
 
             @Override
             public void onFinish() {
-                if (flag==1){dialog.dismiss();}
-                else taskLayout.setRefreshing(false);
+                if (flag==1  && flags!=1){dialog.dismiss();}
+                if (flag!=1)taskLayout.setRefreshing(false);
+                loadsuccess++;
+                if (loadsuccess == 2) {
+                    dialog.dismiss();
+                    loadsuccess=0;
+                }
             }
         });
     }
@@ -457,8 +501,8 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
             //是，则不操作,否，获取此id后的所有消息，然后保存到本地并更新进度
             ArrayList<TaskEntity> arrayList = db.getTaskShow(1);
             if (arrayList != null  && arrayList.size()>0) {
-                LogUtil.d("test", String.valueOf(arrayList.get(0).getTaskNum()));
-                getTask(2, arrayList.get(0).getTaskNum(),3,taskShowNum);
+                LogUtil.d("test", "任务下拉刷新，获取到的最后一条任务id"+String.valueOf(arrayList.get(0).getTaskNum()));
+                getTask(2, arrayList.get(0).getTaskNum(),taskShowNum,3);
             }
         }
     };
@@ -495,13 +539,12 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
         if (requestCode==4){
             if(resultCode == Activity.RESULT_OK) {
                 LogUtil.i("test", "更多返回");
-                showView(4);setTitle("更多");
+                showView(4);
             }
         }else if (requestCode==5){
             if(resultCode == Activity.RESULT_OK) {
                 LogUtil.i("test", "我  返回");
                 showView(5);
-                setTitle("我");
                 initMe();
             }
         }

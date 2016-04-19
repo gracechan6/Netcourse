@@ -17,7 +17,8 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:orientation="horizontal"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:focusableInTouchMode="true">
 
         <TextView
             android:layout_width="100dp"

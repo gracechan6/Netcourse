@@ -224,7 +224,7 @@ public class AttendManageActivity extends BaseActivity {
     protected AdapterView.OnItemClickListener attendClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            if (position+1==attendLists.size()){
+            if (position+1==attendLists.size() && attendLists.get(position).getStatus().equals("LOADINGMORE")){
                 showNum +=7;
                 getAttendFromDB(showNum);
             }
