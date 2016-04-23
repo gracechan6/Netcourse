@@ -46,7 +46,7 @@ public class AttendManageActivity extends BaseActivity {
         setContentView(R.layout.activity_attend_manage);
 
         initToolBar();
-        setTitle("考勤管理");
+        setTitle("出勤管理");
         setRightOfToolbar(true);
         setLeftOfToolbar(true);
         initView();
@@ -99,7 +99,7 @@ public class AttendManageActivity extends BaseActivity {
     protected void getAttendFromDB(int show){
         attendLists.clear();
         attendLists.addAll(db.getAttend(show));
-        if (attendLists.size()>= 8 && attendLists.size()<db.countData(db.TABLE_TASKMANAGESHOW)) {
+        if (attendLists.size()>= 8 && attendLists.size()<db.countData(db.TABLE_ATTENDSHOW)) {
             attendLists.add(new AttendEntity("LOADINGMORE"));
         }
         attendAdapter.notifyDataSetChanged();

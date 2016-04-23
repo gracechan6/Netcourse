@@ -74,7 +74,10 @@ public class AttendDetailActivity extends BaseActivity {
         sta=getIntent().getStringExtra(SystemConfig.STANAME);
         statu=getIntent().getStringExtra(SystemConfig.STATUS);
 
-        pName.setText("发布地点："+getIntent().getStringExtra(SystemConfig.PLACENAME));
+        if (!getIntent().getStringExtra(SystemConfig.PLACENAME).equals("null")) {
+            pName.setText("签到地点：" + getIntent().getStringExtra(SystemConfig.PLACENAME));
+            pName.setVisibility(View.VISIBLE);
+        }
         cName.setText("课程："+getIntent().getStringExtra(SystemConfig.COURNAME));
         tName.setText("发布人："+getIntent().getStringExtra(SystemConfig.TEACHNAME));
         week.setText(getIntent().getStringExtra(SystemConfig.ATTDENCEWEEK)+"考勤");

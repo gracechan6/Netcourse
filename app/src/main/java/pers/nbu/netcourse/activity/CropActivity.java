@@ -28,6 +28,7 @@ import java.io.InputStream;
 import cropper.CropImageView;
 import pers.nbu.netcourse.R;
 import pers.nbu.netcourse.config.SystemConfig;
+import pers.nbu.netcourse.util.LogUtil;
 import pers.nbu.netcourse.util.PreferenceUtils;
 
 
@@ -101,7 +102,7 @@ public class CropActivity extends Activity {
     protected final void upload()
     {
         //保存截图，返回保存文件路径
-        Log.i(getClass().getSimpleName(), "enter upload " + (SystemConfig.PATH_HEAD + PreferenceUtils.getUserId(getApplication()) + SystemConfig.HEAD_TYPE));
+        LogUtil.i(getClass().getSimpleName(), "enter upload " + (SystemConfig.PATH_HEAD + PreferenceUtils.getUserId(getApplication()) + SystemConfig.HEAD_TYPE));
         //保存图片到文件，传递文件名给调用者
 
         String sdStatus = Environment.getExternalStorageState();
@@ -136,11 +137,11 @@ public class CropActivity extends Activity {
 
     private void takePhoto()
     {
-        Log.i(getClass().getSimpleName(), "enter takePhoto");
+        LogUtil.i(getClass().getSimpleName(), "enter takePhoto");
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         //文件夹tmp======拍照的图片保存在此文件夹下
-        String path = SystemConfig.PATH_HEAD+"/tmp";
+        String path = SystemConfig.PATH_HEAD+"tmp/";
         File path1 = new File(path);
         if(!path1.exists()){
             path1.mkdirs();
@@ -185,7 +186,7 @@ public class CropActivity extends Activity {
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.i(getClass().getSimpleName(), "enter onActivityResult");
+        LogUtil.i(getClass().getSimpleName(), "enter onActivityResult");
         //图片选择后返回选择文件名，按文件名称打开图片文件，进行裁剪
         //如果图片太大，图片会以适应屏幕宽度进行重新转换大小，以显示
         if (requestCode == PIC_REQUEST_CODE && resultCode == RESULT_OK && null != data)
@@ -206,7 +207,7 @@ public class CropActivity extends Activity {
         }
         else if (requestCode == TAKE_PHOTO && resultCode == RESULT_OK)
         {
-            String path = SystemConfig.PATH_HEAD+"/tmp";
+            String path = SystemConfig.PATH_HEAD+"tmp";
             crop(path + File.separator + "face.png");
             File file=new File(path);
             if(file.exists())
@@ -219,7 +220,7 @@ public class CropActivity extends Activity {
 
     private void crop(String picturePath)
     {
-        Log.i(getClass().getSimpleName(), "enter crop" + picturePath);
+        LogUtil.i(getClass().getSimpleName(), "enter crop" + picturePath);
         int inSize = 1;
 
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -234,10 +235,11 @@ public class CropActivity extends Activity {
         try
         {
             inputStream = new FileInputStream(new File(picturePath));
-            Log.i(getClass().getSimpleName(), "enter inputStream " + inputStream);
+            LogUtil.i(getClass().getSimpleName(), "enter inputStream " + inputStream+" enter pipath:"+picturePath);
         } catch (FileNotFoundException e)
         {
-            e.printStackTrace();
+            //e.printStackTrace();
+            LogUtil.e("error"+getClass().getSimpleName(),"创建inputStream失败");
         }
 
         if (null != inputStream)
@@ -254,6 +256,13 @@ public class CropActivity extends Activity {
 
             Log.i(getClass().getSimpleName(), "With[" + mBitMap.getWidth() + "], Height[" + mBitMap.getHeight() + "]");
             mCropImageView.setImageBitmap(mBitMap);
+
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                //e.printStackTrace();
+                LogUtil.e("error"+getClass().getSimpleName(),"关闭inputStream失败");
+            }
         }
     }
     /**

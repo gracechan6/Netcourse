@@ -36,7 +36,8 @@ public class AnnActivity extends BaseActivity {
         time.append(getIntent().getStringExtra(SystemConfig.ANNTIME));
         content.setText(Html.fromHtml(getIntent().getStringExtra(SystemConfig.ANNCON)));
         tcName.setText("发布人：" + getIntent().getStringExtra(SystemConfig.TEACHNAME) + " 课程：" + getIntent().getStringExtra(SystemConfig.COURNAME));
-        if (getIntent().getStringExtra(SystemConfig.ANNURL)==null){
+        if (getIntent().getStringExtra(SystemConfig.ANNURL)==null || getIntent().getStringExtra(SystemConfig.ANNURL).equals("")
+                || getIntent().getStringExtra(SystemConfig.ANNURL).equals("null")){
             attach.setVisibility(View.GONE);
         }
 

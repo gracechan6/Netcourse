@@ -52,12 +52,13 @@
                 android:background="@color/bg"/>
 
             <TextView
+                android:visibility="gone"
                 android:id="@+id/pName"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_marginLeft="10dp"
                 android:gravity="center_vertical"
-                android:text="发布设备：默认机房"
+                android:text=""
                 android:textSize="20dp"/>
 
             <TextView

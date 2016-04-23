@@ -33,6 +33,7 @@ import cz.msebera.android.httpclient.Header;
 import pers.nbu.netcourse.BaseApplication;
 import pers.nbu.netcourse.JsonTransform;
 import pers.nbu.netcourse.R;
+import pers.nbu.netcourse.ToastMsg;
 import pers.nbu.netcourse.adapter.AnnAdapter;
 import pers.nbu.netcourse.adapter.TaskAdapter;
 import pers.nbu.netcourse.config.SystemConfig;
@@ -70,7 +71,7 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
     public static int CROP_REQUEST_CODE = 10001;
     public static int Setting = 10002;
     public static final String PHOTO_TYPE = "PHOTO_TYPE";
-    private String headPath;
+    //private String headPath=SystemConfig.PATH_HEAD+ PreferenceUtils.getUserId(getApplication())+SystemConfig.HEAD_TYPE;
 
     //底部导航栏
     private BottomFragment bottomFragment;
@@ -143,7 +144,7 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
         //me
         me = (LinearLayout) findViewById(R.id.me);
         ivHead= (CircleImageView) findViewById(R.id.civ_head);
-        headPath=SystemConfig.PATH_HEAD+ PreferenceUtils.getUserId(getApplication())+SystemConfig.HEAD_TYPE;
+        //headPath=SystemConfig.PATH_HEAD+ PreferenceUtils.getUserId(getApplication())+SystemConfig.HEAD_TYPE;
         className = (TextView) findViewById(R.id.className);
         regDate = (TextView) findViewById(R.id.regDate);
         name = (TextView) findViewById(R.id.name);
@@ -153,7 +154,7 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
     protected AdapterView.OnItemClickListener annClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            if(adapterView.getId()==annLsv.getId() || adapterView.getId()== annShowLsv.getId() ){
+            if(adapterView.getId()==annLsv.getId()){
                 if (position+1==annLists.size() && annLists.get(position).getAnnTitle().equals("LOADINGMORE")){
                     showNum +=7;
                     getAnnFromDB(2,showNum);
@@ -168,7 +169,7 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
                     intent.putExtra(SystemConfig.ANNNUM, annLists.get(position).getAnnNum());
                     startActivity(intent);
                 }
-            }else if (adapterView.getId()==taskLsv.getId() || adapterView.getId()==taskShowLsv.getId()){
+            }else if (adapterView.getId()==taskLsv.getId()){
                 if (position+1==taskLists.size() && taskLists.get(position).getTaskTitle().equals("LOADINGMORE")) {
                     taskShowNum+=7;
                     getTaskFromDB(3,taskShowNum);
@@ -183,7 +184,30 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
                 intent.putExtra(SystemConfig.TASKNUM,taskLists.get(position).getTaskNum());
                 intent.putExtra("flag","1");//代表此activity传入
                 startActivity(intent);
+            }else if(adapterView.getId()== annShowLsv.getId() ){
+                Intent intent = new Intent(getApplicationContext(), AnnActivity.class);
+                intent.putExtra(SystemConfig.ANNTITLE, annShowLists.get(position).getAnnTitle());
+                intent.putExtra(SystemConfig.ANNCON, annShowLists.get(position).getAnnCon());
+                intent.putExtra(SystemConfig.ANNTIME, annShowLists.get(position).getAnnTime());
+                intent.putExtra(SystemConfig.ANNURL, annShowLists.get(position).getAnnUrl());
+                intent.putExtra(SystemConfig.TEACHNAME, annShowLists.get(position).getTeachName());
+                intent.putExtra(SystemConfig.COURNAME, annShowLists.get(position).getCourName());
+                intent.putExtra(SystemConfig.ANNNUM, annShowLists.get(position).getAnnNum());
+                startActivity(intent);
             }
+            else if(adapterView.getId()==taskShowLsv.getId() ){
+                Intent intent = new Intent(getApplicationContext(),TaskShowActivity.class);
+                intent.putExtra(SystemConfig.TASKTITLE, taskShowLists.get(position).getTaskTitle());
+                intent.putExtra(SystemConfig.TASKREQUIRE,taskShowLists.get(position).getTaskRequire());
+                intent.putExtra(SystemConfig.TASKTIME,taskShowLists.get(position).getTaskTime());
+                intent.putExtra(SystemConfig.ENDTIME,taskShowLists.get(position).getEndTime());
+                intent.putExtra(SystemConfig.TEACHNAME,taskShowLists.get(position).getTeachName());
+                intent.putExtra(SystemConfig.COURNAME,taskShowLists.get(position).getCourName());
+                intent.putExtra(SystemConfig.TASKNUM,taskShowLists.get(position).getTaskNum());
+                intent.putExtra("flag","1");//代表此activity传入
+                startActivity(intent);
+            }
+
         }
     };
 
@@ -207,12 +231,12 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
                 case R.id.more:
                     setTitle("更多");
                     if (PreferenceUtils.getLOGINVAL()) {showView(4);}
-                    else showLogin(4);
+                    else{ showView(9999); showLogin(4);}
                     break;
                 case R.id.me:
                     setTitle("我");
                     if (PreferenceUtils.getLOGINVAL()) {showView(5);initMe();}
-                    else showLogin(5);
+                    else{showView(9999); showLogin(5);}
                     break;
                 default:
                     break;
@@ -279,7 +303,7 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
     protected void init(int flag,int num){
         dialog.show();
         initAnn(flag, num);
-        initTask(flag, num);
+        //initTask(flag, num);
     }
 //首页========end
 
@@ -385,11 +409,14 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
             public void onFinish() {
                 if (flag==1 && flags!=1) dialog.dismiss();
                 if (flag!=1) srlayout.setRefreshing(false);
-                loadsuccess++;
-                if (loadsuccess == 2) {
-                    dialog.dismiss();
-                    loadsuccess=0;
+                if (flags == 1){
+                    initTask(flags,showAnn);
                 }
+//                loadsuccess++;
+//                if (loadsuccess == 2) {
+//                    dialog.dismiss();
+//                    loadsuccess=0;
+//                }
             }
         });
     }
@@ -480,13 +507,13 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
 
             @Override
             public void onFinish() {
+                if (flags == 1) {
+                    dialog.dismiss();
+                    //loadsuccess=0;
+                }
                 if (flag==1  && flags!=1){dialog.dismiss();}
                 if (flag!=1)taskLayout.setRefreshing(false);
-                loadsuccess++;
-                if (loadsuccess == 2) {
-                    dialog.dismiss();
-                    loadsuccess=0;
-                }
+
             }
         });
     }
@@ -528,6 +555,7 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
                 startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), flag);
             }
         });
+        builder.setCancelable(false);
         builder.show();
     }
 //任务========end
@@ -554,6 +582,7 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
             * 头像成功了
             * */
             //Bitmap bitmap=data.getExtras().getParcelable(CropActivity.BITMAP_DATA);
+            LogUtil.i("test","showHeadNow");
             setHead();
         }
 
@@ -574,7 +603,7 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
      * @param view
      */
     public void doAttendManage(View view){
-        startActivity(new Intent(getApplicationContext(),AttendManageActivity.class));
+        startActivity(new Intent(getApplicationContext(), AttendManageActivity.class));
     }
 
 //更多========end
@@ -608,8 +637,9 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
         builder.setNegativeButton("确认", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                int re=db.delData(name);
-                LogUtil.i("test", name+"删除了数据总条数："+re);
+                int re = db.delData(name);
+                LogUtil.i("test", name + "删除了数据总条数：" + re);
+                ToastMsg.showToast("本地共有" + re + "条数据，已清除完毕！");
             }
         });
         builder.show();
@@ -664,10 +694,15 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
      * 头像显示
      */
     public  void setHead(){
+        String headPath=SystemConfig.PATH_HEAD+ PreferenceUtils.getUserId(getApplication())+SystemConfig.HEAD_TYPE;
         File file=new File(headPath);
+
         if(file.exists()){
             Bitmap bm= BitmapFactory.decodeFile(headPath);
             ivHead.setImageDrawable(new BitmapDrawable(bm));
+        }
+        else{
+            LogUtil.i("test",getClass().getSimpleName()+"  头像不存在 路径："+headPath);
         }
     }
 

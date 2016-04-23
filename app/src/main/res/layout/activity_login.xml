@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg"
     tools:context="pers.nbu.netcourse.activity.LoginActivity">
@@ -18,16 +19,14 @@
         android:layout_height="60dp"
         android:orientation="horizontal"
         android:background="@color/white"
+        android:focusable="true"
         android:focusableInTouchMode="true">
-
         <TextView
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/name"
             android:textSize="22sp"/>
-
-
         <EditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -37,7 +36,7 @@
             android:ems="10"
             android:id="@+id/name"
             android:textColor="@color/greyDeep"
-            android:text="124177505"
+            android:text=""
             android:textSize="23sp"/>
     </LinearLayout>
 
@@ -73,7 +72,7 @@
             android:ems="10"
             android:id="@+id/pwd"
             android:textColor="@color/greyDeep"
-            android:text="124177505"
+            android:text=""
             android:textSize="23sp"/>
     </LinearLayout>
 

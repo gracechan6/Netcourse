@@ -32,6 +32,7 @@ public class TaskShowActivity extends BaseActivity {
         tcName = (TextView) findViewById(R.id.tcName);
         turnOver = (TextView) findViewById(R.id.turnOver);
 
+
         title.setText(getIntent().getStringExtra(SystemConfig.TASKTITLE));
         time.append(getIntent().getStringExtra(SystemConfig.TASKTIME));
 
@@ -42,10 +43,13 @@ public class TaskShowActivity extends BaseActivity {
         }else{
             require.setVisibility(View.GONE);
             turnOver.setVisibility(View.VISIBLE);
-            if(getIntent().getStringExtra(SystemConfig.OPUSNUM).equals("0"))
+            if(getIntent().getStringExtra(SystemConfig.OPUSNUM).equals("0")) {
                 turnOver.append(" 未交");
-            else
+                turnOver.setTextColor(getResources().getColor(R.color.red_select));
+            }
+            else {
                 turnOver.append(" 已交");
+            }
         }
 
     }

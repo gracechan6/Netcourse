@@ -160,7 +160,7 @@ public class DB {
             values.put(SystemConfig.ENDTIME, tasks.get(i).getEndTime());
             values.put(SystemConfig.TEACHNAME, tasks.get(i).getTeachName());
             values.put(SystemConfig.COURNAME, tasks.get(i).getCourName());
-            values.put(SystemConfig.TASKREQUIRE, tasks.get(i).getCourName());
+            values.put(SystemConfig.TASKREQUIRE, tasks.get(i).getTaskRequire());
             db.insert(TABLE_TASKSHOW, null, values);
         }
         db.setTransactionSuccessful();
@@ -345,7 +345,7 @@ public class DB {
      */
     public ArrayList<AttendEntity> getNeedUpdateAttend(){
         ArrayList<AttendEntity> attends= new ArrayList<>();
-        Cursor cursor=db.rawQuery("select * from "+TABLE_ATTENDSHOW+" where UpdateNum<>1000 and Status ='缺课'",null);
+        Cursor cursor=db.rawQuery("select * from "+TABLE_ATTENDSHOW+" where UpdateNum<>1000 ",null);
         if (cursor.moveToFirst()){
             do {
                 AttendEntity attend = new AttendEntity(
