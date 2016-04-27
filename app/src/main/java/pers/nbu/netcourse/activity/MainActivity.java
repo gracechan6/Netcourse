@@ -174,16 +174,18 @@ public class MainActivity extends BaseActivity implements ActionSheet.MenuItemCl
                     taskShowNum+=7;
                     getTaskFromDB(3,taskShowNum);
                 }
-                Intent intent = new Intent(getApplicationContext(),TaskShowActivity.class);
-                intent.putExtra(SystemConfig.TASKTITLE, taskLists.get(position).getTaskTitle());
-                intent.putExtra(SystemConfig.TASKREQUIRE,taskLists.get(position).getTaskRequire());
-                intent.putExtra(SystemConfig.TASKTIME,taskLists.get(position).getTaskTime());
-                intent.putExtra(SystemConfig.ENDTIME,taskLists.get(position).getEndTime());
-                intent.putExtra(SystemConfig.TEACHNAME,taskLists.get(position).getTeachName());
-                intent.putExtra(SystemConfig.COURNAME,taskLists.get(position).getCourName());
-                intent.putExtra(SystemConfig.TASKNUM,taskLists.get(position).getTaskNum());
-                intent.putExtra("flag","1");//代表此activity传入
-                startActivity(intent);
+                else {
+                    Intent intent = new Intent(getApplicationContext(), TaskShowActivity.class);
+                    intent.putExtra(SystemConfig.TASKTITLE, taskLists.get(position).getTaskTitle());
+                    intent.putExtra(SystemConfig.TASKREQUIRE, taskLists.get(position).getTaskRequire());
+                    intent.putExtra(SystemConfig.TASKTIME, taskLists.get(position).getTaskTime());
+                    intent.putExtra(SystemConfig.ENDTIME, taskLists.get(position).getEndTime());
+                    intent.putExtra(SystemConfig.TEACHNAME, taskLists.get(position).getTeachName());
+                    intent.putExtra(SystemConfig.COURNAME, taskLists.get(position).getCourName());
+                    intent.putExtra(SystemConfig.TASKNUM, taskLists.get(position).getTaskNum());
+                    intent.putExtra("flag", "1");//代表此activity传入
+                    startActivity(intent);
+                }
             }else if(adapterView.getId()== annShowLsv.getId() ){
                 Intent intent = new Intent(getApplicationContext(), AnnActivity.class);
                 intent.putExtra(SystemConfig.ANNTITLE, annShowLists.get(position).getAnnTitle());
